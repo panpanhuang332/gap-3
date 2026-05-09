@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closing the Pre-Encounter Pollution Gap — 互動式學術閱讀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+TC:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F7F1E3;
+    --paper-deep: #EFE7D2;
+    --ink: #2A1810;
+    --ink-soft: #5A4838;
+    --burgundy: #7B1F2E;
+    --burgundy-deep: #5A1422;
+    --moss: #2D4A3A;
+    --rule: #D4C4A8;
+    --rule-soft: #E5DCC4;
+    --highlight: rgba(123, 31, 46, 0.08);
+    --vocab-line: rgba(45, 74, 58, 0.45);
+    --shadow: 0 4px 24px rgba(42, 24, 16, 0.08);
+    --shadow-deep: 0 12px 48px rgba(42, 24, 16, 0.16);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Lora', 'Noto Serif TC', serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(123, 31, 46, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(45, 74, 58, 0.03) 0%, transparent 40%);
+    min-height: 100vh;
+  }
+  /* HERO */
+  .hero { border-bottom: 1px solid var(--rule); padding: 48px 24px 32px;
+    background: linear-gradient(180deg, var(--paper-deep) 0%, var(--paper) 100%); position: relative; }
+  .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--burgundy) 0%, var(--moss) 100%); }
+  .hero-inner { max-width: 880px; margin: 0 auto; }
+  .meta-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .badge { padding: 5px 12px; border-radius: 2px; font-weight: 500; }
+  .badge-burgundy { background: var(--burgundy); color: var(--paper); }
+  .badge-outline { border: 1px solid var(--ink-soft); color: var(--ink-soft); }
+  .badge-moss { background: var(--moss); color: var(--paper); }
+  h1.title { font-family: 'Playfair Display', serif; font-size: clamp(26px, 4.5vw, 40px);
+    font-weight: 700; line-height: 1.18; color: var(--ink); margin-bottom: 12px; letter-spacing: -0.01em; }
+  h1.title em { font-style: italic; color: var(--burgundy); }
+  .subtitle { font-family: 'Noto Serif TC', serif; font-size: 16px; color: var(--ink-soft); margin-bottom: 18px; line-height: 1.6; }
+  .author-line { font-family: 'Outfit', sans-serif; font-size: 12.5px; color: var(--ink-soft); letter-spacing: 0.04em; line-height: 1.6; }
+  .author-line strong { color: var(--ink); font-weight: 500; }
+
+  /* TABS */
+  .tabs-bar { background: var(--paper); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 50;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 1px 0 rgba(0,0,0,0.02); }
+  .tabs-inner { max-width: 1100px; margin: 0 auto; display: flex; padding: 0 16px; min-width: max-content; }
+  .tab { font-family: 'Outfit', sans-serif; font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 16px 16px; color: var(--ink-soft); cursor: pointer; border: none; background: transparent;
+    border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; font-weight: 500; position: relative; }
+  .tab .num { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400;
+    margin-right: 6px; color: var(--burgundy); }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--burgundy); border-bottom-color: var(--burgundy); }
+
+  /* TOOLBAR */
+  .toolbar { background: var(--paper-deep); border-bottom: 1px solid var(--rule); padding: 12px 0;
+    position: sticky; top: 49px; z-index: 49; }
+  .toolbar-inner { max-width: 880px; margin: 0 auto; padding: 0 24px; display: flex; flex-wrap: wrap;
+    gap: 16px; align-items: center; font-family: 'Outfit', sans-serif; font-size: 13px; }
+  .tool-group { display: flex; align-items: center; gap: 8px; color: var(--ink-soft); }
+  .tool-group label { font-weight: 500; }
+  .toggle { position: relative; display: inline-block; width: 40px; height: 22px; }
+  .toggle input { display: none; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--rule); border-radius: 22px; cursor: pointer; transition: 0.2s; }
+  .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px;
+    background: var(--paper); border-radius: 50%; transition: 0.2s; }
+  .toggle input:checked + .toggle-slider { background: var(--burgundy); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+  .btn { font-family: 'Outfit', sans-serif; font-size: 12px; padding: 5px 10px; border: 1px solid var(--rule);
+    background: var(--paper); color: var(--ink-soft); cursor: pointer; border-radius: 3px; transition: 0.15s; }
+  .btn:hover { border-color: var(--burgundy); color: var(--burgundy); }
+  .btn.active { background: var(--burgundy); color: var(--paper); border-color: var(--burgundy); }
+
+  /* READING */
+  .reading { max-width: 740px; margin: 0 auto; padding: 48px 24px 80px; }
+  .section-label { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--burgundy); margin-bottom: 6px; font-weight: 600; }
+  h2.section-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700;
+    color: var(--ink); margin-bottom: 28px; border-bottom: 2px solid var(--ink); padding-bottom: 14px;
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h2.section-title .roman { font-style: italic; font-weight: 400; color: var(--burgundy); font-size: 26px; }
+  h3.subsection { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600;
+    color: var(--ink); margin: 36px 0 16px; padding-left: 12px; border-left: 4px solid var(--burgundy); }
+  h4.subsubsection { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600;
+    color: var(--moss); margin: 24px 0 12px; font-style: italic; }
+  .subsection-zh { font-family: 'Noto Serif TC', serif; font-size: 14px; color: var(--ink-soft);
+    margin: -12px 0 18px; padding-left: 16px; }
+
+  /* SENTENCE */
+  .sentence { margin-bottom: 18px; padding: 16px 18px 16px 22px; background: var(--paper);
+    border-left: 2px solid var(--rule-soft); border-radius: 0 4px 4px 0; transition: all 0.25s ease; position: relative; }
+  .sentence:hover { border-left-color: var(--burgundy); background: rgba(255, 255, 255, 0.5); box-shadow: var(--shadow); }
+  .sentence.read { opacity: 0.55; border-left-color: var(--moss); }
+  .sentence-num { font-family: 'Playfair Display', serif; font-style: italic; font-size: 12px;
+    color: var(--burgundy); position: absolute; left: -24px; top: 20px; font-weight: 600; }
+  .en { font-family: 'Lora', serif; font-size: 17.5px; line-height: 1.75; color: var(--ink); letter-spacing: 0.005em; }
+  .zh { font-family: 'Noto Serif TC', serif; font-size: 15px; color: var(--ink-soft); line-height: 1.85;
+    margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule); max-height: 0;
+    overflow: hidden; opacity: 0; transition: all 0.3s ease; }
+  .zh.show { max-height: 600px; opacity: 1; }
+  .zh::before { content: '譯'; display: inline-block; font-family: 'Outfit', sans-serif; font-size: 10px;
+    background: var(--moss); color: var(--paper); padding: 2px 6px; border-radius: 2px; margin-right: 8px;
+    vertical-align: middle; letter-spacing: 0.1em; font-weight: 500; }
+  .sentence-controls { display: flex; gap: 8px; margin-top: 10px; align-items: center;
+    font-family: 'Outfit', sans-serif; font-size: 11px; }
+  .icon-btn { width: 26px; height: 26px; border: 1px solid var(--rule); background: var(--paper);
+    border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: 0.15s; color: var(--ink-soft); font-size: 12px; }
+  .icon-btn:hover { background: var(--burgundy); border-color: var(--burgundy); color: var(--paper); transform: scale(1.05); }
+  .icon-btn.playing { background: var(--burgundy); border-color: var(--burgundy); color: var(--paper);
+    animation: pulse 1s infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(123, 31, 46, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(123, 31, 46, 0); } }
+  .ctrl-text { color: var(--ink-soft); font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  /* VOCAB */
+  .vocab { background-image: linear-gradient(transparent 60%, rgba(45, 74, 58, 0.18) 60%);
+    border-bottom: 1px dotted var(--vocab-line); cursor: help; position: relative; padding: 0 1px; transition: background 0.15s; }
+  .vocab:hover { background-image: linear-gradient(transparent 60%, rgba(123, 31, 46, 0.25) 60%); color: var(--burgundy); }
+  .vocab-tooltip { position: fixed; z-index: 100; background: var(--ink); color: var(--paper);
+    padding: 14px 16px; border-radius: 6px; box-shadow: var(--shadow-deep); max-width: 340px; min-width: 260px;
+    font-family: 'Lora', 'Noto Serif TC', serif; font-size: 14px; line-height: 1.55; pointer-events: auto;
+    opacity: 0; transform: translateY(8px); transition: opacity 0.15s, transform 0.15s; visibility: hidden; }
+  .vocab-tooltip.show { opacity: 1; transform: translateY(0); visibility: visible; }
+  .vocab-tooltip::before { content: ''; position: absolute; top: -6px; left: 24px;
+    border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid var(--ink); }
+  .vt-word { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--paper);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .vt-word .vt-play { cursor: pointer; background: rgba(255,255,255,0.12); border: none; color: var(--paper);
+    width: 22px; height: 22px; border-radius: 50%; font-size: 11px; display: inline-flex; align-items: center;
+    justify-content: center; transition: 0.15s; }
+  .vt-word .vt-play:hover { background: var(--burgundy); }
+  .vt-pos { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(247, 241, 227, 0.55); margin-bottom: 8px; }
+  .vt-pos .pos-tag { display: inline-block; padding: 2px 6px; border: 1px solid rgba(247, 241, 227, 0.3);
+    border-radius: 2px; margin-right: 6px; }
+  .vt-zh { font-family: 'Noto Serif TC', serif; font-size: 14.5px; color: var(--paper); margin-bottom: 10px;
+    padding-bottom: 10px; border-bottom: 1px solid rgba(247, 241, 227, 0.15); }
+  .vt-example { font-size: 12.5px; color: rgba(247, 241, 227, 0.85); font-style: italic; margin-top: 4px; }
+  .vt-example-zh { font-family: 'Noto Serif TC', serif; font-size: 12.5px; color: rgba(247, 241, 227, 0.65);
+    font-style: normal; margin-top: 2px; }
+
+  /* PROGRESS */
+  .progress-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 3px; background: var(--rule-soft); z-index: 60; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--burgundy), var(--moss));
+    width: 0; transition: width 0.3s ease; }
+  .progress-text { position: fixed; bottom: 12px; right: 24px; font-family: 'Outfit', sans-serif;
+    font-size: 11px; letter-spacing: 0.1em; background: var(--ink); color: var(--paper);
+    padding: 6px 12px; border-radius: 12px; z-index: 60; box-shadow: var(--shadow); }
+
+  /* SPECIAL BLOCKS */
+  .callout { margin: 20px 0; padding: 16px 20px; background: rgba(123, 31, 46, 0.05);
+    border-left: 3px solid var(--burgundy); border-radius: 0 4px 4px 0; }
+  .callout-title { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--burgundy); font-weight: 600; margin-bottom: 6px; }
+  .callout-content { font-family: 'Noto Serif TC', serif; font-size: 14.5px; color: var(--ink-soft); line-height: 1.75; }
+
+  .formula { margin: 20px 0; padding: 18px 24px; background: var(--ink); color: var(--paper);
+    text-align: center; font-family: 'Playfair Display', serif; font-style: italic; font-size: 18px;
+    border-radius: 4px; letter-spacing: 0.02em; }
+  .formula-caption { font-family: 'Noto Serif TC', serif; font-size: 13px; color: var(--ink-soft);
+    text-align: center; margin-top: -12px; margin-bottom: 20px; font-style: italic; }
+
+  table.data-table { width: 100%; margin: 20px 0; border-collapse: collapse; font-family: 'Outfit', 'Noto Serif TC', sans-serif;
+    font-size: 13px; }
+  table.data-table th { background: var(--ink); color: var(--paper); padding: 10px 12px; text-align: left;
+    font-weight: 500; letter-spacing: 0.04em; font-size: 12px; }
+  table.data-table td { padding: 10px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); }
+  table.data-table tr:hover td { background: var(--paper-deep); }
+
+  .ref-list { font-family: 'Lora', serif; font-size: 13.5px; line-height: 1.75; color: var(--ink-soft); }
+  .ref-list li { margin-bottom: 12px; padding-left: 24px; text-indent: -24px; list-style: none; }
+
+  .zh-abstract { background: var(--paper-deep); padding: 24px 28px; border-radius: 4px;
+    border-left: 3px solid var(--moss); font-family: 'Noto Serif TC', serif; font-size: 15.5px; line-height: 1.95;
+    color: var(--ink); margin: 24px 0; }
+  .zh-abstract strong { color: var(--burgundy); }
+  .keywords { font-size: 13px; color: var(--ink-soft); margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--rule); font-family: 'Outfit', 'Noto Serif TC', sans-serif; }
+  .keywords-label { color: var(--burgundy); font-weight: 600; letter-spacing: 0.05em; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .hero { padding: 32px 20px 24px; }
+    .reading { padding: 32px 20px 80px; }
+    .sentence { padding: 14px 14px 14px 16px; }
+    .sentence-num { display: none; }
+    .en { font-size: 16px; }
+    .zh { font-size: 14px; }
+    h2.section-title { font-size: 26px; }
+    h2.section-title .roman { font-size: 20px; }
+    h3.subsection { font-size: 19px; }
+    .toolbar-inner { font-size: 12px; gap: 10px; }
+    .tabs-inner { padding: 0 8px; }
+    .tab { padding: 14px 10px; font-size: 11.5px; }
+  }
+  body.fs-large .en { font-size: 19.5px; }
+  body.fs-large .zh { font-size: 16.5px; }
+  body.fs-small .en { font-size: 15.5px; }
+  body.fs-small .zh { font-size: 13.5px; }
+
+  /* LOADING */
+  .loading-section { text-align: center; padding: 60px 20px; color: var(--ink-soft);
+    font-family: 'Outfit', sans-serif; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="meta-badges">
+      <span class="badge badge-burgundy">Pre-Registered Report</span>
+      <span class="badge badge-moss">SSCI Target</span>
+      <span class="badge badge-outline">Three-Conference Integration</span>
+    </div>
+    <h1 class="title">Closing the Pre-Encounter Pollution Gap:<br><em>An Integrated Theory and Measurement Framework for Digital Fake Reviews</em></h1>
+    <div class="subtitle">數位資訊污染缺口的理論建構與測量整合 — 基於三部曲研究的 Pre-Registered Report</div>
+    <div class="author-line">
+      <strong>黄國津 Kuo-Chin Huang</strong> · 建國科技大學 商業管理系 · 2026-05-08<br>
+      Target: <em>Service Industries Journal</em> Q1 / <em>Journal of Service Research</em> / <em>Decision Support Systems</em>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs-bar">
+  <div class="tabs-inner" id="tabs"></div>
+</nav>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="tool-group">
+      <label for="show-zh">中譯</label>
+      <label class="toggle"><input type="checkbox" id="show-zh"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="tool-group">
+      <label>字級</label>
+      <button class="btn" data-fs="small">小</button>
+      <button class="btn active" data-fs="normal">中</button>
+      <button class="btn" data-fs="large">大</button>
+    </div>
+    <div class="tool-group">
+      <label>朗讀速度</label>
+      <button class="btn" data-rate="0.7">慢</button>
+      <button class="btn active" data-rate="0.9">中</button>
+      <button class="btn" data-rate="1.1">快</button>
+    </div>
+  </div>
+</div>
+
+<!-- READING -->
+<main class="reading" id="reading"></main>
+
+<!-- PROGRESS -->
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="progress-text" id="progress-text">0 / 0</div>
+
+<!-- TOOLTIP -->
+<div class="vocab-tooltip" id="tooltip"></div>
+
+<script>
+// ============================================
+// VOCAB DICTIONARY
+// ============================================
+const VOCAB = {
+  // §0 ABSTRACT
+  "introduces":{pos:"v.",phon:"/ˌɪntrəˈdjuːsɪz/",zh:"提出;引入(新概念)",ex_en:"This paper introduces a new framework.",ex_zh:"本文提出一個新的架構。"},
+  "formally":{pos:"adv.",phon:"/ˈfɔːrməli/",zh:"正式地;形式上",ex_en:"We formally define the concept below.",ex_zh:"我們在下文正式定義此概念。"},
+  "distinguishes":{pos:"v.",phon:"/dɪˈstɪŋɡwɪʃɪz/",zh:"區分;辨別",ex_en:"The theory distinguishes A from B.",ex_zh:"該理論將 A 與 B 區分開來。"},
+  "operationalizes":{pos:"v.",phon:"/ˌɒpəˈreɪʃənəlaɪzɪz/",zh:"操作化(學術術語:把抽象概念轉成可測量的指標)",ex_en:"We operationalize trust as survey scores.",ex_zh:"我們把信任操作化為問卷分數。"},
+  "extension":{pos:"n.",phon:"/ɪkˈstenʃən/",zh:"延伸;擴展",ex_en:"This is an extension of prior work.",ex_zh:"這是先前研究的延伸。"},
+  "drawing on":{pos:"phr.",phon:"/ˈdrɔːɪŋ ɒn/",zh:"援引;借助於",ex_en:"Drawing on Freud, the author argues...",ex_zh:"作者援引佛洛伊德主張...。"},
+  "pillars":{pos:"n.",phon:"/ˈpɪlərz/",zh:"支柱;基石(此處指「理論支柱」)",ex_en:"The framework rests on three pillars.",ex_zh:"此架構建立在三大支柱之上。"},
+  "accountability":{pos:"n.",phon:"/əˌkaʊntəˈbɪlɪti/",zh:"問責性;責任歸屬",ex_en:"Public accountability matters in policy.",ex_zh:"公共問責性在政策上至關重要。"},
+  "signaling":{pos:"adj./n.",phon:"/ˈsɪɡnəlɪŋ/",zh:"訊號(理論);信號傳遞",ex_en:"Signaling theory explains hiring decisions.",ex_zh:"信號理論解釋雇用決策。"},
+  "argue":{pos:"v.",phon:"/ˈɑːrɡjuː/",zh:"主張;論證",ex_en:"We argue that this is the case.",ex_zh:"我們主張情況確實如此。"},
+  "systematically":{pos:"adv.",phon:"/ˌsɪstəˈmætɪkli/",zh:"系統性地",ex_en:"Errors accumulate systematically.",ex_zh:"錯誤會系統性地累積。"},
+  "pollute":{pos:"v.",phon:"/pəˈluːt/",zh:"污染(此處引申為「扭曲」資訊)",ex_en:"Misinformation pollutes public discourse.",ex_zh:"錯誤資訊污染了公共論述。"},
+  "pre-encounter":{pos:"adj.",phon:"/priː ɪnˈkaʊntər/",zh:"接觸前的(服務尚未發生之前)",ex_en:"Pre-encounter expectations shape later perceptions.",ex_zh:"接觸前的期望會塑造後續感受。"},
+  "expectations":{pos:"n.",phon:"/ˌekspekˈteɪʃənz/",zh:"期望;預期",ex_en:"Expectations affect satisfaction.",ex_zh:"期望會影響滿意度。"},
+  "polluted":{pos:"adj.",phon:"/pəˈluːtɪd/",zh:"被污染的(此處指期望被假評扭曲)",ex_en:"The data are polluted by selection bias.",ex_zh:"資料被選擇偏誤污染了。"},
+  "authentic":{pos:"adj.",phon:"/ɔːˈθentɪk/",zh:"真實的;真品的",ex_en:"This is an authentic Italian recipe.",ex_zh:"這是道地的義大利食譜。"},
+  "propagates":{pos:"v.",phon:"/ˈprɒpəɡeɪts/",zh:"傳播;擴散(影響向後延伸)",ex_en:"The error propagates through the system.",ex_zh:"誤差會在系統中向後擴散。"},
+  "directionally":{pos:"adv.",phon:"/dəˈrekʃənəli/",zh:"方向性地",ex_en:"The effect is directionally negative.",ex_zh:"此效應方向上為負。"},
+  "identifiable":{pos:"adj.",phon:"/aɪˌdentɪˈfaɪəbəl/",zh:"可識別的",ex_en:"The bias is identifiable from the data.",ex_zh:"此偏誤可從資料中識別出來。"},
+  "construct":{pos:"n.",phon:"/ˈkɒnstrʌkt/",zh:"構念(學術術語:無法直接觀察的抽象概念)",ex_en:"Intelligence is a psychological construct.",ex_zh:"智力是個心理學構念。"},
+  "instrument":{pos:"n.",phon:"/ˈɪnstrəmənt/",zh:"(此處)測量工具;量表",ex_en:"Our instrument has 15 items.",ex_zh:"我們的量表有 15 個題目。"},
+  "credibility":{pos:"n.",phon:"/ˌkredɪˈbɪlɪti/",zh:"可信度;可靠性",ex_en:"Source credibility shapes persuasion.",ex_zh:"來源可信度塑造說服效果。"},
+  "complement":{pos:"v.",phon:"/ˈkɒmplɪment/",zh:"補充;互補",ex_en:"Qualitative methods complement surveys.",ex_zh:"質性方法可補充問卷研究。"},
+  "platform-side":{pos:"adj.",phon:"/ˈplætfɔːrm saɪd/",zh:"平台端的(對應於消費者端)",ex_en:"A platform-side fix is required.",ex_zh:"必須有一個平台端的解決方案。"},
+  "click-based":{pos:"adj.",phon:"/klɪk beɪst/",zh:"點選式的",ex_en:"A click-based survey is fast.",ex_zh:"點選式問卷速度很快。"},
+  "assessment":{pos:"n.",phon:"/əˈsesmənt/",zh:"評估;鑑定",ex_en:"Risk assessment is part of due diligence.",ex_zh:"風險評估是盡職調查的一部分。"},
+  "semantic":{pos:"adj.",phon:"/sɪˈmæntɪk/",zh:"語意的(關於意義)",ex_en:"Semantic similarity can be computed.",ex_zh:"語意相似度可被計算出來。"},
+  "ensemble":{pos:"n.",phon:"/ɒnˈsɒmbəl/",zh:"集合;(此處)多模型集成方法",ex_en:"An ensemble of LLMs reduces error.",ex_zh:"多 LLM 集成方法可降低誤差。"},
+  "protocol":{pos:"n.",phon:"/ˈprəʊtəkɒl/",zh:"協議;標準作業程序",ex_en:"The lab protocol is strict.",ex_zh:"實驗室標準作業程序很嚴格。"},
+  "empirical":{pos:"adj.",phon:"/ɪmˈpɪrɪkəl/",zh:"實證的(基於資料的)",ex_en:"This claim has empirical support.",ex_zh:"此主張有實證支持。"},
+  "validation":{pos:"n.",phon:"/ˌvælɪˈdeɪʃən/",zh:"驗證",ex_en:"Validation against real data is essential.",ex_zh:"用實際資料驗證至關重要。"},
+  "psychometric":{pos:"adj.",phon:"/ˌsaɪkəˈmetrɪk/",zh:"心理計量的(量表測量學)",ex_en:"Psychometric properties must be assessed.",ex_zh:"心理計量性質必須被評估。"},
+  "efficacy":{pos:"n.",phon:"/ˈefɪkəsi/",zh:"效能;成效",ex_en:"Drug efficacy is tested in trials.",ex_zh:"藥物效能會在臨床試驗中檢測。"},
+  "explicit":{pos:"adj.",phon:"/ɪkˈsplɪsɪt/",zh:"明確的;明示的",ex_en:"The rules are explicit.",ex_zh:"規則寫得很明確。"},
+  "predicted":{pos:"adj.",phon:"/prɪˈdɪktɪd/",zh:"預測的;事先預期的",ex_en:"The predicted effect was confirmed.",ex_zh:"預期的效應得到了證實。"},
+  "effect sizes":{pos:"n.",phon:"/ɪˈfekt saɪzɪz/",zh:"效應量(統計術語:衡量影響強度)",ex_en:"Cohen's d is a common effect size.",ex_zh:"Cohen's d 是常見的效應量。"},
+  "derived":{pos:"adj.",phon:"/dɪˈraɪvd/",zh:"衍生自的;導出的",ex_en:"The formula is derived from theory.",ex_zh:"此公式是從理論推導而來。"},
+  "outline":{pos:"v.",phon:"/ˈaʊtlaɪn/",zh:"概述",ex_en:"We outline three phases below.",ex_zh:"以下我們概述三個階段。"},
+  "phase":{pos:"n.",phon:"/feɪz/",zh:"階段;時期",ex_en:"Phase 1 starts in May.",ex_zh:"第一階段於五月展開。"},
+  "stratified":{pos:"adj.",phon:"/ˈstrætɪfaɪd/",zh:"分層的(抽樣方法)",ex_en:"We used stratified sampling.",ex_zh:"我們採用分層抽樣。"},
+  "span":{pos:"v.",phon:"/spæn/",zh:"涵蓋;跨越",ex_en:"Her career spans 30 years.",ex_zh:"她的職涯跨越 30 年。"},
+  "positioning":{pos:"v.",phon:"/pəˈzɪʃənɪŋ/",zh:"定位",ex_en:"Positioning the product is critical.",ex_zh:"產品定位至關重要。"},
+  "institutionally":{pos:"adv.",phon:"/ˌɪnstɪˈtjuːʃənəli/",zh:"制度上;體制上",ex_en:"This is institutionally distinct.",ex_zh:"這在制度上是有別於彼的。"},
+  "methodological":{pos:"adj.",phon:"/ˌmeθədəˈlɒdʒɪkəl/",zh:"方法學上的",ex_en:"Methodological rigor is non-negotiable.",ex_zh:"方法學嚴謹度不可妥協。"},
+  "responding":{pos:"v.",phon:"/rɪˈspɒndɪŋ/",zh:"回應",ex_en:"We are responding to a clear need.",ex_zh:"我們正在回應一個明確的需求。"},
+  "intervention":{pos:"n.",phon:"/ˌɪntərˈvenʃən/",zh:"介入;干預",ex_en:"Early intervention improves outcomes.",ex_zh:"早期介入能改善結果。"},
+  "domains":{pos:"n.",phon:"/dəʊˈmeɪnz/",zh:"領域;範疇",ex_en:"AI is now used across many domains.",ex_zh:"AI 現已被應用於許多領域。"},
+  "boundary":{pos:"n.",phon:"/ˈbaʊndəri/",zh:"邊界;界限",ex_en:"Boundary conditions limit applicability.",ex_zh:"邊界條件限制了適用範圍。"},
+  "elaboration":{pos:"n.",phon:"/ɪˌlæbəˈreɪʃən/",zh:"精細化;闡述(此處為 ELM 模型用語)",ex_en:"Elaboration depth varies by motivation.",ex_zh:"精細化深度隨動機而變。"},
+  "likelihood":{pos:"n.",phon:"/ˈlaɪklihʊd/",zh:"可能性;似然",ex_en:"The likelihood is low.",ex_zh:"可能性很低。"},
+  "specified":{pos:"adj.",phon:"/ˈspesɪfaɪd/",zh:"被指明的;被明訂的",ex_en:"All conditions are specified in advance.",ex_zh:"所有條件已事先明訂。"},
+
+  // §1 INTRODUCTION
+  "contemporary":{pos:"adj.",phon:"/kənˈtempərəri/",zh:"當代的",ex_en:"Contemporary art differs from classical.",ex_zh:"當代藝術不同於古典。"},
+  "ecosystems":{pos:"n.",phon:"/ˈiːkəʊsɪstəmz/",zh:"生態系(此處引申為「市場/平台生態」)",ex_en:"Digital ecosystems evolve quickly.",ex_zh:"數位生態系演化快速。"},
+  "function as":{pos:"phr.",phon:"/ˈfʌŋkʃən æz/",zh:"作為...功能;充當",ex_en:"This document functions as a contract.",ex_zh:"此文件具有合約的功能。"},
+  "primary":{pos:"adj.",phon:"/ˈpraɪməri/",zh:"主要的;首要的",ex_en:"Cost is our primary concern.",ex_zh:"成本是我們首要關心的事。"},
+  "informational":{pos:"adj.",phon:"/ˌɪnfərˈmeɪʃənəl/",zh:"資訊性的;提供資訊的",ex_en:"This is an informational meeting.",ex_zh:"這是一場資訊性會議。"},
+  "input":{pos:"n.",phon:"/ˈɪnpʊt/",zh:"輸入;投入(資訊)",ex_en:"User input shapes the algorithm.",ex_zh:"使用者輸入塑造演算法。"},
+  "consumer":{pos:"n.",phon:"/kənˈsuːmər/",zh:"消費者",ex_en:"Consumer trust is hard to rebuild.",ex_zh:"消費者信任難以重建。"},
+  "pre-purchase":{pos:"adj.",phon:"/priː ˈpɜːrtʃəs/",zh:"購買前的",ex_en:"Pre-purchase research is increasing.",ex_zh:"購買前的研究行為日益增加。"},
+  "formalizes":{pos:"v.",phon:"/ˈfɔːrməlaɪzɪz/",zh:"使形式化;明確化",ex_en:"The model formalizes the intuition.",ex_zh:"此模型把直覺予以形式化。"},
+  "necessarily":{pos:"adv.",phon:"/ˌnesəˈserəli/",zh:"必然地;必定",ex_en:"Big does not necessarily mean better.",ex_zh:"大不必然代表好。"},
+  "traverse":{pos:"v.",phon:"/trəˈvɜːrs/",zh:"穿越;經歷",ex_en:"They traverse the desert by camel.",ex_zh:"他們騎駱駝穿越沙漠。"},
+  "gathering":{pos:"v.",phon:"/ˈɡæðərɪŋ/",zh:"蒐集;收集",ex_en:"Data gathering is the first step.",ex_zh:"資料蒐集是第一步。"},
+  "encounter":{pos:"n./v.",phon:"/ɪnˈkaʊntər/",zh:"接觸;遭遇(服務業:服務接觸點)",ex_en:"The service encounter shapes loyalty.",ex_zh:"服務接觸點塑造顧客忠誠。"},
+  "evidence":{pos:"n.",phon:"/ˈevɪdəns/",zh:"證據",ex_en:"There is strong evidence for this.",ex_zh:"此事有強力的證據。"},
+  "striking":{pos:"adj.",phon:"/ˈstraɪkɪŋ/",zh:"驚人的;引人注目的",ex_en:"The contrast is striking.",ex_zh:"對比相當驚人。"},
+  "consult":{pos:"v.",phon:"/kənˈsʌlt/",zh:"參考;查閱;諮詢",ex_en:"Consumers consult reviews online.",ex_zh:"消費者會線上查閱評論。"},
+  "rely on":{pos:"phr.",phon:"/rɪˈlaɪ ɒn/",zh:"依賴;仰賴",ex_en:"We rely on accurate data.",ex_zh:"我們仰賴精確的資料。"},
+  "mechanism":{pos:"n.",phon:"/ˈmekənɪzəm/",zh:"機制;機轉",ex_en:"The underlying mechanism is unclear.",ex_zh:"背後的機制尚未清楚。"},
+  "originally":{pos:"adv.",phon:"/əˈrɪdʒɪnəli/",zh:"原本;最初",ex_en:"It was originally a barn.",ex_zh:"它原本是個穀倉。"},
+  "structural":{pos:"adj.",phon:"/ˈstrʌktʃərəl/",zh:"結構性的",ex_en:"Structural problems require deep reform.",ex_zh:"結構性問題需要深度改革。"},
+  "asymmetry":{pos:"n.",phon:"/eɪˈsɪmɪtri/",zh:"不對稱(此處:資訊不對稱)",ex_en:"Information asymmetry creates lemons markets.",ex_zh:"資訊不對稱會造成檸檬市場。"},
+  "inherent":{pos:"adj.",phon:"/ɪnˈherənt/",zh:"固有的;內在的",ex_en:"Risk is inherent in investing.",ex_zh:"風險是投資固有的。"},
+  "proliferation":{pos:"n.",phon:"/prəˌlɪfəˈreɪʃən/",zh:"激增;氾濫",ex_en:"The proliferation of apps is overwhelming.",ex_zh:"應用程式的激增令人應接不暇。"},
+  "precipitated":{pos:"v.",phon:"/prɪˈsɪpɪteɪtɪd/",zh:"促成;引發(突發事件)",ex_en:"The crisis precipitated reform.",ex_zh:"這場危機促成了改革。"},
+  "term":{pos:"v.",phon:"/tɜːrm/",zh:"稱為;命名為",ex_en:"What we term burnout is widespread.",ex_zh:"我們所謂的「職業倦怠」相當普遍。"},
+  "collapse":{pos:"n./v.",phon:"/kəˈlæps/",zh:"崩潰;崩塌",ex_en:"The system is on the verge of collapse.",ex_zh:"系統瀕臨崩潰。"},
+  "peer":{pos:"n.",phon:"/pɪər/",zh:"同儕;同等地位的人",ex_en:"Peer feedback aids learning.",ex_zh:"同儕回饋有助學習。"},
+  "manufactured":{pos:"adj.",phon:"/ˌmænjəˈfæktʃərd/",zh:"製造的;捏造的",ex_en:"The crisis was manufactured for profit.",ex_zh:"這場危機是為了牟利而捏造的。"},
+  "narratives":{pos:"n.",phon:"/ˈnærətɪvz/",zh:"敘事;說法",ex_en:"Competing narratives confused readers.",ex_zh:"互相競爭的敘事讓讀者混淆。"},
+  "crafted":{pos:"v.",phon:"/ˈkræftɪd/",zh:"精心製作的",ex_en:"The speech was carefully crafted.",ex_zh:"這場演講是精心撰寫的。"},
+  "bias":{pos:"v.",phon:"/ˈbaɪəs/",zh:"使...偏誤;偏向",ex_en:"Their words biased the jury.",ex_zh:"他們的言論使陪審團產生偏見。"},
+  "formation":{pos:"n.",phon:"/fɔːrˈmeɪʃən/",zh:"形成;構成",ex_en:"Habit formation takes time.",ex_zh:"習慣的形成需要時間。"},
+  "prohibition":{pos:"n.",phon:"/ˌprəʊɪˈbɪʃən/",zh:"禁止;禁令",ex_en:"The prohibition on smoking is strict.",ex_zh:"禁菸令很嚴格。"},
+  "provisions":{pos:"n.",phon:"/prəˈvɪʒənz/",zh:"條款;規定",ex_en:"The contract has strict provisions.",ex_zh:"合約有嚴格的條款。"},
+  "growing":{pos:"adj.",phon:"/ˈɡrəʊɪŋ/",zh:"日益增長的",ex_en:"There is growing concern about privacy.",ex_zh:"對隱私的擔憂日益增長。"},
+  "marginal":{pos:"adj.",phon:"/ˈmɑːrdʒɪnəl/",zh:"邊緣性的;微不足道的",ex_en:"Their effect is marginal.",ex_zh:"他們的影響微不足道。"},
+  "phenomenon":{pos:"n.",phon:"/fəˈnɒmɪnən/",zh:"現象(複數 phenomena)",ex_en:"This is a documented phenomenon.",ex_zh:"這是個有記錄的現象。"},
+  "systemic":{pos:"adj.",phon:"/sɪˈstemɪk/",zh:"系統性的(影響整個系統的)",ex_en:"This is a systemic risk.",ex_zh:"這是一個系統性風險。"},
+  "lacuna":{pos:"n.",phon:"/ləˈkjuːnə/",zh:"空缺;缺漏(學術用詞,常指研究缺口)",ex_en:"The literature has a clear lacuna.",ex_zh:"該領域文獻有明顯的研究缺口。"},
+  "predominantly":{pos:"adv.",phon:"/prɪˈdɒmɪnəntli/",zh:"主要地;絕大部分地",ex_en:"They are predominantly male.",ex_zh:"他們絕大部分是男性。"},
+  "classifiers":{pos:"n.",phon:"/ˈklæsɪfaɪərz/",zh:"分類器(機器學習術語)",ex_en:"The classifier achieves 95% accuracy.",ex_zh:"分類器達到 95% 準確率。"},
+  "neural":{pos:"adj.",phon:"/ˈnʊərəl/",zh:"神經的(神經網路)",ex_en:"Neural networks learn from data.",ex_zh:"神經網路從資料中學習。"},
+  "achieving":{pos:"v.",phon:"/əˈtʃiːvɪŋ/",zh:"達成;取得",ex_en:"Achieving consensus is difficult.",ex_zh:"取得共識並不容易。"},
+  "in-sample":{pos:"adj.",phon:"/ɪn ˈsæmpəl/",zh:"樣本內的(統計術語)",ex_en:"In-sample accuracy is misleading.",ex_zh:"樣本內準確率具有誤導性。"},
+  "accuracy":{pos:"n.",phon:"/ˈækjərəsi/",zh:"準確率",ex_en:"Accuracy is critical for diagnosis.",ex_zh:"準確率對診斷至關重要。"},
+  "conceptual":{pos:"adj.",phon:"/kənˈseptʃʊəl/",zh:"概念上的",ex_en:"This is a conceptual paper.",ex_zh:"這是一篇概念性論文。"},
+  "blind spot":{pos:"phr.",phon:"/blaɪnd spɒt/",zh:"盲點",ex_en:"Bias is a common blind spot.",ex_zh:"偏見是常見的盲點。"},
+  "post-hoc":{pos:"adj.",phon:"/pəʊst hɒk/",zh:"事後的(拉丁文)",ex_en:"Post-hoc analyses must be flagged.",ex_zh:"事後分析必須註明。"},
+  "distorted":{pos:"adj.",phon:"/dɪˈstɔːrtɪd/",zh:"被扭曲的",ex_en:"Distorted memories are unreliable.",ex_zh:"被扭曲的記憶並不可靠。"},
+  "retroactive":{pos:"adj.",phon:"/ˌretrəʊˈæktɪv/",zh:"追溯既往的;回溯的",ex_en:"Retroactive policy changes are unfair.",ex_zh:"追溯性的政策變更並不公平。"},
+  "discrepancy":{pos:"n.",phon:"/dɪˈskrepənsi/",zh:"差異;不一致",ex_en:"There is a discrepancy in the figures.",ex_zh:"數字之間有出入。"},
+  "captures":{pos:"v.",phon:"/ˈkæptʃərz/",zh:"捕捉;掌握(此處:概念上「對應」)",ex_en:"The model captures the dynamic.",ex_zh:"此模型捕捉了動態變化。"},
+  "shaped":{pos:"adj.",phon:"/ʃeɪpt/",zh:"被塑造的",ex_en:"Personality is shaped by experience.",ex_zh:"性格由經驗塑造。"},
+  "originate":{pos:"v.",phon:"/əˈrɪdʒɪneɪt/",zh:"源自;發起於",ex_en:"The idea originated in Vienna.",ex_zh:"此構想源自維也納。"},
+  "third parties":{pos:"n.",phon:"/θɜːrd ˈpɑːrtiz/",zh:"第三方(非主要當事人)",ex_en:"Third parties handle delivery.",ex_zh:"配送由第三方處理。"},
+  "impersonating":{pos:"v.",phon:"/ɪmˈpɜːrsəneɪtɪŋ/",zh:"假冒;冒充",ex_en:"Impersonating an officer is illegal.",ex_zh:"冒充警官是違法的。"},
+  "exploiting":{pos:"v.",phon:"/ɪkˈsplɔɪtɪŋ/",zh:"利用;剝削(此處中性「善用」之意)",ex_en:"They are exploiting a loophole.",ex_zh:"他們正在利用一個漏洞。"},
+  "heuristic":{pos:"n.",phon:"/hjʊˈrɪstɪk/",zh:"捷思法;經驗法則(認知心理學術語)",ex_en:"Availability is a common heuristic.",ex_zh:"可得性是常見的捷思法。"},
+  "carry over":{pos:"phr.",phon:"/ˈkæri ˈəʊvər/",zh:"帶有更多;勝過",ex_en:"Reputation carries over price in this segment.",ex_zh:"在此區塊聲譽勝過價格。"},
+  "principal":{pos:"adj.",phon:"/ˈprɪnsəpəl/",zh:"主要的",ex_en:"This is our principal concern.",ex_zh:"這是我們主要關切的事。"},
+  "contributions":{pos:"n.",phon:"/ˌkɒntrɪˈbjuːʃənz/",zh:"貢獻",ex_en:"Three contributions are highlighted.",ex_zh:"三項貢獻被點出。"},
+  "demonstrate":{pos:"v.",phon:"/ˈdemənstreɪt/",zh:"證明;展示",ex_en:"We demonstrate this empirically.",ex_zh:"我們以實證證明此點。"},
+  "grounded":{pos:"adj.",phon:"/ˈɡraʊndɪd/",zh:"立基於;有根據的",ex_en:"Grounded in evidence, the claim holds.",ex_zh:"立基於證據,此主張成立。"},
+  "actors":{pos:"n.",phon:"/ˈæktərz/",zh:"行動者;當事方(學術用語)",ex_en:"Multiple actors are involved.",ex_zh:"多個當事方參與其中。"},
+  "regimes":{pos:"n.",phon:"/reɪˈʒiːmz/",zh:"體制;體系",ex_en:"Different regulatory regimes apply.",ex_zh:"適用不同的監管體系。"},
+  "lemon-signaling":{pos:"adj.",phon:"/ˈlemən ˈsɪɡnəlɪŋ/",zh:"檸檬市場式信號(Akerlof 理論)",ex_en:"Lemon-signaling forces honest sellers out.",ex_zh:"檸檬訊號會把誠實賣家逼出市場。"},
+  "puffery":{pos:"n.",phon:"/ˈpʌfəri/",zh:"(廣告)誇大其詞",ex_en:"Promotional puffery is legally tolerated.",ex_zh:"廣告誇大在法律上被容忍。"},
+  "explicitly":{pos:"adv.",phon:"/ɪkˈsplɪsɪtli/",zh:"明確地",ex_en:"He explicitly stated his position.",ex_zh:"他明確表達立場。"},
+  "designed":{pos:"adj.",phon:"/dɪˈzaɪnd/",zh:"專為...設計的",ex_en:"This tool is designed for educators.",ex_zh:"此工具是為教育者設計。"},
+  "rather than":{pos:"phr.",phon:"/ˈræðər ðæn/",zh:"而非;而不是",ex_en:"Quality rather than quantity matters.",ex_zh:"重要的是品質而非數量。"},
+  "transparent":{pos:"adj.",phon:"/trænsˈpærənt/",zh:"透明的;公開的",ex_en:"Transparent processes build trust.",ex_zh:"透明流程建立信任。"},
+  "delineate":{pos:"v.",phon:"/dɪˈlɪnieɪt/",zh:"勾勒;明確界定",ex_en:"We delineate the scope below.",ex_zh:"我們在下文界定範圍。"},
+  "moderator":{pos:"n.",phon:"/ˈmɒdəreɪtər/",zh:"調節變項(統計學術語)",ex_en:"Age is a key moderator here.",ex_zh:"年齡在此是關鍵的調節變項。"},
+  "involvement":{pos:"n.",phon:"/ɪnˈvɒlvmənt/",zh:"涉入度(消費者行為術語:對產品/議題的關注程度)",ex_en:"High-involvement decisions take longer.",ex_zh:"高涉入決策需要較長時間。"},
+  "articulated":{pos:"v.",phon:"/ɑːrˈtɪkjəleɪtɪd/",zh:"清楚表達的;闡述的",ex_en:"The standards are articulated in §3.",ex_zh:"這些標準在第三節有所闡述。"},
+  "fixes":{pos:"v.",phon:"/ˈfɪksɪz/",zh:"固定;確立(此處:預先固定不可改)",ex_en:"This protocol fixes the analysis plan.",ex_zh:"此協議固定了分析計畫。"},
+  "sampling":{pos:"n.",phon:"/ˈsæmplɪŋ/",zh:"抽樣",ex_en:"Random sampling reduces bias.",ex_zh:"隨機抽樣可降低偏誤。"},
+  "analytic":{pos:"adj.",phon:"/ˌænəˈlɪtɪk/",zh:"分析的",ex_en:"Our analytic plan is pre-registered.",ex_zh:"我們的分析計畫是預先註冊的。"},
+  "procedures":{pos:"n.",phon:"/prəˈsiːdʒərz/",zh:"程序;步驟",ex_en:"Standard procedures must be followed.",ex_zh:"必須遵循標準程序。"},
+  "prior to":{pos:"phr.",phon:"/ˈpraɪər tʊ/",zh:"在...之前",ex_en:"Read this prior to the meeting.",ex_zh:"請於會議之前閱讀此件。"},
+  "deviation":{pos:"n.",phon:"/ˌdiːviˈeɪʃən/",zh:"偏離;偏差",ex_en:"Any deviation will be flagged.",ex_zh:"任何偏離都會被註記。"},
+  "implementation":{pos:"n.",phon:"/ˌɪmplɪmənˈteɪʃən/",zh:"實施;執行",ex_en:"Implementation begins next month.",ex_zh:"執行於下個月開始。"},
+  "transparently":{pos:"adv.",phon:"/trænsˈpærəntli/",zh:"透明地;公開地",ex_en:"All changes are transparently logged.",ex_zh:"所有更動均透明記錄。"},
+  "disclosed":{pos:"v.",phon:"/dɪsˈkləʊzd/",zh:"被揭露;被公開",ex_en:"The conflict was disclosed.",ex_zh:"利益衝突已被揭露。"},
+  "supplementary":{pos:"adj.",phon:"/ˌsʌplɪˈmentəri/",zh:"補充的;附加的",ex_en:"See the supplementary materials.",ex_zh:"請見補充資料。"},
+  "principles":{pos:"n.",phon:"/ˈprɪnsəpəlz/",zh:"原則",ex_en:"Ethical principles guide research.",ex_zh:"倫理原則指引研究。"},
+  "operationally":{pos:"adv.",phon:"/ˌɒpəˈreɪʃənəli/",zh:"操作上",ex_en:"This is operationally feasible.",ex_zh:"這在操作上可行。"},
+
+  // shared / earlier vocab
+  "exhibit":{pos:"v.",phon:"/ɪɡˈzɪbɪt/",zh:"展現;表現",ex_en:"The data exhibit a clear pattern.",ex_zh:"資料呈現出清晰的模式。"},
+  "literature":{pos:"n.",phon:"/ˈlɪtərətʃər/",zh:"(該領域的)學術文獻",ex_en:"The literature is vast.",ex_zh:"該領域文獻廣博。"},
+  "extends":{pos:"v.",phon:"/ɪkˈstendz/",zh:"擴展;延伸",ex_en:"This extends prior work.",ex_zh:"此研究擴展先前研究。"},
+  "implications":{pos:"n.",phon:"/ˌɪmplɪˈkeɪʃənz/",zh:"意涵;後續影響",ex_en:"The policy implications are significant.",ex_zh:"政策意涵相當重大。"},
+  "framework":{pos:"n.",phon:"/ˈfreɪmwɜːrk/",zh:"架構;框架",ex_en:"We propose a new framework.",ex_zh:"我們提出新的架構。"},
+  "investigate":{pos:"v.",phon:"/ɪnˈvestɪɡeɪt/",zh:"調查;研究",ex_en:"We investigate three drivers.",ex_zh:"我們研究三個驅動因素。"},
+  "moderates":{pos:"v.",phon:"/ˈmɒdəreɪts/",zh:"調節(統計:調節變項)",ex_en:"Education moderates the effect.",ex_zh:"教育程度調節此效應。"},
+  "participants":{pos:"n.",phon:"/pɑːrˈtɪsɪpənts/",zh:"參與者;受試者",ex_en:"Participants completed the task.",ex_zh:"參與者完成了任務。"},
+  "outcomes":{pos:"n.",phon:"/ˈaʊtkʌmz/",zh:"結果;成效",ex_en:"Outcomes vary across groups.",ex_zh:"各組結果不同。"},
+  "longitudinal":{pos:"adj.",phon:"/ˌlɒndʒɪˈtjuːdɪnəl/",zh:"縱貫的(長期追蹤研究法)",ex_en:"A longitudinal design tracks change.",ex_zh:"縱貫設計能追蹤變化。"},
+  "findings":{pos:"n.",phon:"/ˈfaɪndɪŋz/",zh:"研究發現",ex_en:"Findings were striking.",ex_zh:"研究發現相當驚人。"},
+  "sub-dimensions":{pos:"n.",phon:"/sʌb dɪˈmenʃənz/",zh:"次構面;子維度",ex_en:"The construct has three sub-dimensions.",ex_zh:"此構念有三個次構面。"},
+
+  // §2 LITERATURE
+  "locus":{pos:"n.",phon:"/ˈləʊkəs/",zh:"立足點;發生位置(學術用詞)",ex_en:"The locus of control varies by person.",ex_zh:"控制觀的立足點因人而異。"},
+  "sensory":{pos:"adj.",phon:"/ˈsensəri/",zh:"感官的",ex_en:"Sensory details bring a story to life.",ex_zh:"感官細節能讓故事鮮活起來。"},
+  "identifiability":{pos:"n.",phon:"/aɪˌdentɪfaɪəˈbɪlɪti/",zh:"可識別性",ex_en:"Source identifiability anchors trust.",ex_zh:"來源可識別性是信任的錨點。"},
+  "lemons":{pos:"n.",phon:"/ˈlemənz/",zh:"檸檬(此處為經濟學術語:劣質商品)",ex_en:"The lemons problem hits used cars hardest.",ex_zh:"檸檬問題對二手車市場衝擊最大。"},
+  "equilibrium":{pos:"n.",phon:"/ˌiːkwɪˈlɪbriəm/",zh:"均衡(經濟學術語)",ex_en:"Markets converge to equilibrium.",ex_zh:"市場會收斂至均衡。"},
+  "discernment":{pos:"n.",phon:"/dɪˈsɜːrnmənt/",zh:"識別能力;辨識力",ex_en:"Critical discernment is a teachable skill.",ex_zh:"批判性識別能力是可被教導的技能。"},
+  "synthesizing":{pos:"v.",phon:"/ˈsɪnθəsaɪzɪŋ/",zh:"綜合;整合",ex_en:"Synthesizing findings is the final step.",ex_zh:"整合研究發現是最後一步。"},
+
+  // §3 FRAMEWORK
+  "discrepancy":{pos:"n.",phon:"/dɪˈskrepənsi/",zh:"差異;不一致(同前)",ex_en:"There is a discrepancy in the figures.",ex_zh:"數字之間有出入。"},
+  "polarity":{pos:"n.",phon:"/pəʊˈlærɪti/",zh:"極性;方向性",ex_en:"The signal has clear polarity.",ex_zh:"訊號具有清楚的方向極性。"},
+  "inflated":{pos:"adj.",phon:"/ɪnˈfleɪtɪd/",zh:"被膨脹的;高估的",ex_en:"Inflated expectations cause disappointment.",ex_zh:"被膨脹的期望會引發失望。"},
+  "baseline":{pos:"n.",phon:"/ˈbeɪslaɪn/",zh:"基準線",ex_en:"Use the pre-test as baseline.",ex_zh:"以前測作為基準線。"},
+  "deflated":{pos:"adj.",phon:"/dɪˈfleɪtɪd/",zh:"被壓低的",ex_en:"Deflated morale hurts productivity.",ex_zh:"低落的士氣損害生產力。"},
+  "manipulation":{pos:"n.",phon:"/məˌnɪpjʊˈleɪʃən/",zh:"操弄;操控",ex_en:"Market manipulation is illegal.",ex_zh:"市場操弄違法。"},
+  "conditioned":{pos:"adj.",phon:"/kənˈdɪʃənd/",zh:"被制約的;條件性的",ex_en:"His response was conditioned by training.",ex_zh:"他的反應是被訓練所制約的。"},
+  "modified":{pos:"adj.",phon:"/ˈmɒdɪfaɪd/",zh:"被修改的;改良的",ex_en:"This is the modified version.",ex_zh:"這是修改後的版本。"},
+  "implicitly":{pos:"adv.",phon:"/ɪmˈplɪsɪtli/",zh:"隱含地;暗中地",ex_en:"Many models implicitly assume linearity.",ex_zh:"許多模型隱含假設線性關係。"},
+  "confounder":{pos:"n.",phon:"/kənˈfaʊndər/",zh:"混淆變項(統計學術語)",ex_en:"Income is a known confounder here.",ex_zh:"收入在此是已知的混淆變項。"},
+  "conflate":{pos:"v.",phon:"/kənˈfleɪt/",zh:"混為一談;混淆",ex_en:"Don't conflate correlation with cause.",ex_zh:"別把相關性與因果關係混為一談。"},
+  "challenger":{pos:"n.",phon:"/ˈtʃælɪndʒər/",zh:"挑戰者(此處:挑戰立場)",ex_en:"A challenger view deserves response.",ex_zh:"挑戰立場值得回應。"},
+  "reject":{pos:"v.",phon:"/rɪˈdʒekt/",zh:"駁回;拒斥",ex_en:"We reject the null hypothesis.",ex_zh:"我們拒絕虛無假設。"},
+  "managerial":{pos:"adj.",phon:"/ˌmænəˈdʒɪriəl/",zh:"管理者的;管理上的",ex_en:"Managerial responsibility is core to ESG.",ex_zh:"管理者責任是 ESG 的核心。"},
+  "tracks":{pos:"v.",phon:"/træks/",zh:"追隨;對應(此處:概念上「跟隨」)",ex_en:"Pay tracks performance closely.",ex_zh:"薪酬緊密對應績效。"},
+  "agency":{pos:"n.",phon:"/ˈeɪdʒənsi/",zh:"能動性;行動主體",ex_en:"Patients want a sense of agency.",ex_zh:"病患希望有自主能動感。"},
+  "deception":{pos:"n.",phon:"/dɪˈsepʃən/",zh:"欺騙",ex_en:"Deception is hard to sustain.",ex_zh:"欺騙難以長期維持。"},
+  "infrastructure":{pos:"n.",phon:"/ˈɪnfrəstrʌktʃər/",zh:"基礎設施;基礎建構",ex_en:"Trust infrastructure is invisible but vital.",ex_zh:"信任基礎建構雖然隱形卻至關重要。"},
+  "disciplines":{pos:"v.",phon:"/ˈdɪsəplɪnz/",zh:"約束;規制",ex_en:"Reputation disciplines online sellers.",ex_zh:"聲譽會約束線上賣家。"},
+  "saboteurs":{pos:"n.",phon:"/ˌsæbəˈtɜːrz/",zh:"破壞者;搞破壞的人",ex_en:"Competitor saboteurs target reviews.",ex_zh:"競爭對手的破壞者鎖定評論下手。"},
+  "jurisdictional":{pos:"adj.",phon:"/ˌdʒʊərɪsˈdɪkʃənəl/",zh:"司法管轄的",ex_en:"Jurisdictional disputes slow enforcement.",ex_zh:"司法管轄爭議拖累執法。"},
+  "dispersion":{pos:"n.",phon:"/dɪˈspɜːrʃən/",zh:"分散;離散",ex_en:"The data show high dispersion.",ex_zh:"資料的離散度很高。"},
+  "redress":{pos:"n.",phon:"/rɪˈdres/",zh:"救濟;補償",ex_en:"Legal redress is hard to obtain.",ex_zh:"法律救濟並不容易取得。"},
+  "structurally":{pos:"adv.",phon:"/ˈstrʌktʃərəli/",zh:"結構性地",ex_en:"The cost is structurally embedded.",ex_zh:"成本是被結構性內嵌的。"},
+  "absent":{pos:"adj.",phon:"/ˈæbsənt/",zh:"缺席的;不存在的",ex_en:"Oversight is structurally absent here.",ex_zh:"監督在此結構性地缺位。"},
+  "obscured":{pos:"adj.",phon:"/əbˈskjʊərd/",zh:"被遮蔽的;模糊化的",ex_en:"Their identity remains obscured.",ex_zh:"他們的身分仍遭隱蔽。"},
+  "frame":{pos:"n.",phon:"/freɪm/",zh:"框架(此處:詮釋角度)",ex_en:"The narrative frame matters.",ex_zh:"敘事框架很重要。"},
+  "weight":{pos:"n.",phon:"/weɪt/",zh:"權重;比重",ex_en:"Peers carry more weight than ads.",ex_zh:"同儕比廣告更具份量。"},
+  "pathways":{pos:"n.",phon:"/ˈpæθweɪz/",zh:"路徑;管道",ex_en:"Two cognitive pathways are at play.",ex_zh:"兩個認知路徑同時運作。"},
+  "unaddressed":{pos:"adj.",phon:"/ˌʌnəˈdrest/",zh:"未被處理的",ex_en:"Unaddressed bias compounds over time.",ex_zh:"未被處理的偏誤會隨時間複合放大。"},
+  "pooling":{pos:"adj.",phon:"/ˈpuːlɪŋ/",zh:"匯集的(經濟學:pooling equilibrium 混合均衡)",ex_en:"A pooling outcome lacks separation.",ex_zh:"混合均衡缺乏區隔。"},
+  "historically":{pos:"adv.",phon:"/hɪˈstɒrɪkli/",zh:"在歷史上",ex_en:"Historically, this market was stable.",ex_zh:"在歷史上,此市場曾相當穩定。"},
+  "equilibrate":{pos:"v.",phon:"/ɪˈkwɪlɪbreɪt/",zh:"達到均衡;平衡化",ex_en:"Markets equilibrate around norms.",ex_zh:"市場圍繞規範達到均衡。"},
+  "puffery":{pos:"n.",phon:"/ˈpʌfəri/",zh:"吹噓;誇大其詞",ex_en:"Promotional puffery is legally tolerated.",ex_zh:"廣告吹噓法律上被容忍。"},
+  "norms":{pos:"n.",phon:"/nɔːrmz/",zh:"規範",ex_en:"Social norms shape behavior.",ex_zh:"社會規範塑造行為。"},
+  "qualitatively":{pos:"adv.",phon:"/ˈkwɒlɪtətɪvli/",zh:"質性上;本質上",ex_en:"This is qualitatively different.",ex_zh:"這在本質上是不同的。"},
+  "credibly":{pos:"adv.",phon:"/ˈkredəbli/",zh:"可信地",ex_en:"They cannot credibly distinguish themselves.",ex_zh:"他們無法可信地把自己區別開來。"},
+  "rational":{pos:"adj.",phon:"/ˈræʃənəl/",zh:"理性的",ex_en:"The rational response is to comply.",ex_zh:"理性的回應是遵守。"},
+  "textbook":{pos:"adj.",phon:"/ˈtekstbʊk/",zh:"教科書式的;典型的",ex_en:"This is a textbook example.",ex_zh:"這是個典型的範例。"},
+  "prevalence":{pos:"n.",phon:"/ˈprevələns/",zh:"普及率;盛行率",ex_en:"The prevalence is rising.",ex_zh:"普及率正在上升。"},
+  "normalization":{pos:"n.",phon:"/ˌnɔːrməlaɪˈzeɪʃən/",zh:"常態化;正常化",ex_en:"Supply-side normalization is concerning.",ex_zh:"供給端的常態化令人憂心。"},
+  "decomposed":{pos:"v.",phon:"/ˌdiːkəmˈpəʊzd/",zh:"被分解的;被拆解的",ex_en:"The model is decomposed into parts.",ex_zh:"此模型被拆解為若干部分。"},
+  "anchors":{pos:"n.",phon:"/ˈæŋkərz/",zh:"錨點;依據",ex_en:"These details are credibility anchors.",ex_zh:"這些細節是可信度的錨點。"},
+  "self-disclosure":{pos:"n.",phon:"/self dɪsˈkləʊʒər/",zh:"自我揭露",ex_en:"Self-disclosure builds rapport.",ex_zh:"自我揭露能建立連結。"},
+  "presence":{pos:"n.",phon:"/ˈprezəns/",zh:"存在;呈現",ex_en:"The presence of detail signals authenticity.",ex_zh:"細節的呈現是真實性的訊號。"},
+  "anchored":{pos:"adj.",phon:"/ˈæŋkərd/",zh:"被錨定的",ex_en:"MOT-anchored details are diagnostic.",ex_zh:"以 MOT 為錨的細節具診斷性。"},
+  "personnel":{pos:"n.",phon:"/ˌpɜːrsəˈnel/",zh:"人員;員工",ex_en:"Front-line personnel matter most.",ex_zh:"第一線人員最為關鍵。"},
+  "particulars":{pos:"n.",phon:"/pərˈtɪkjələrz/",zh:"細節;具體事項",ex_en:"Sensory particulars distinguish authentic stories.",ex_zh:"感官細節能區分出真實故事。"},
+  "contingent":{pos:"adj.",phon:"/kənˈtɪndʒənt/",zh:"偶發的;依情況而定的",ex_en:"Contingent events test resilience.",ex_zh:"偶發事件考驗韌性。"},
+  "alignment":{pos:"n.",phon:"/əˈlaɪnmənt/",zh:"對齊;一致",ex_en:"Strategic alignment matters.",ex_zh:"策略一致性很重要。"},
+  "anticipated":{pos:"adj.",phon:"/ænˈtɪsɪpeɪtɪd/",zh:"預期的;預料的",ex_en:"The anticipated effect was confirmed.",ex_zh:"預期的效應得到了證實。"},
+  "consensus":{pos:"n.",phon:"/kənˈsensəs/",zh:"共識",ex_en:"Cross-review consensus is informative.",ex_zh:"跨評論共識具有資訊價值。"},
+  "congruence":{pos:"n.",phon:"/ˈkɒŋɡruəns/",zh:"一致性;契合",ex_en:"Temporal congruence is one cue.",ex_zh:"時間一致性是其中一個線索。"},
+  "convergent":{pos:"adj.",phon:"/kənˈvɜːrdʒənt/",zh:"收斂的(統計效度術語:convergent validity 收斂效度)",ex_en:"Convergent validity is essential.",ex_zh:"收斂效度至關重要。"},
+  "discriminant":{pos:"adj.",phon:"/dɪˈskrɪmɪnənt/",zh:"區辨的(統計效度術語:discriminant validity 區辨效度)",ex_en:"Discriminant validity must also hold.",ex_zh:"區辨效度也必須成立。"},
+  "predictive":{pos:"adj.",phon:"/prɪˈdɪktɪv/",zh:"預測性的",ex_en:"Predictive validity is the gold standard.",ex_zh:"預測效度是黃金標準。"},
+  "prototype":{pos:"n.",phon:"/ˈprəʊtətaɪp/",zh:"原型",ex_en:"This is a working prototype.",ex_zh:"這是個可運作的原型。"},
+
+  // §4 METHODOLOGY
+  "mixed-methods":{pos:"adj.",phon:"/mɪkst ˈmeθədz/",zh:"混合方法的(質化+量化研究法)",ex_en:"Mixed-methods designs offer triangulation.",ex_zh:"混合方法設計能提供三角驗證。"},
+  "cross-sectional":{pos:"adj.",phon:"/krɒs ˈsekʃənəl/",zh:"橫斷面的(同一時間點蒐集資料)",ex_en:"A cross-sectional survey is faster.",ex_zh:"橫斷面調查速度較快。"},
+  "between-subjects":{pos:"adj.",phon:"/bɪˈtwiːn ˈsʌbdʒɪkts/",zh:"受試者間的(實驗設計術語)",ex_en:"Between-subjects designs reduce carryover.",ex_zh:"受試者間設計能減少順序效應。"},
+  "factorial":{pos:"adj.",phon:"/fækˈtɔːriəl/",zh:"因子的(實驗設計:多因子組合)",ex_en:"A 2×2 factorial design has four cells.",ex_zh:"2×2 因子設計有四個格。"},
+  "deployed":{pos:"v.",phon:"/dɪˈplɔɪd/",zh:"部署;施行",ex_en:"The protocol will be deployed in May.",ex_zh:"此協議將於五月施行。"},
+  "candidate":{pos:"n.",phon:"/ˈkændɪdət/",zh:"候選的;待選的",ex_en:"Candidate items go through review.",ex_zh:"候選題目須經過審查。"},
+  "raw":{pos:"adj.",phon:"/rɔː/",zh:"原始的;未處理的",ex_en:"Raw data must be cleaned first.",ex_zh:"原始資料必須先清理。"},
+  "provenance":{pos:"n.",phon:"/ˈprɒvənəns/",zh:"來源歷程;出處紀錄",ex_en:"Data provenance ensures reproducibility.",ex_zh:"資料來源歷程確保可重現性。"},
+  "scored":{pos:"v.",phon:"/skɔːrd/",zh:"被評分",ex_en:"Each item is scored independently.",ex_zh:"每一題都被獨立評分。"},
+  "purity":{pos:"n.",phon:"/ˈpjʊərɪti/",zh:"純度",ex_en:"Construct purity matters in scale design.",ex_zh:"構念純度在量表設計上很重要。"},
+  "concreteness":{pos:"n.",phon:"/ˈkɒnkriːtnəs/",zh:"具體度",ex_en:"Concreteness aids comprehension.",ex_zh:"具體度有助於理解。"},
+  "measurability":{pos:"n.",phon:"/ˌmeʒərəˈbɪlɪti/",zh:"可測量性",ex_en:"Measurability is the first hurdle.",ex_zh:"可測量性是第一道關卡。"},
+  "fluency":{pos:"n.",phon:"/ˈfluːənsi/",zh:"流暢度",ex_en:"Linguistic fluency is rated by experts.",ex_zh:"語言流暢度由專家評分。"},
+  "discriminability":{pos:"n.",phon:"/dɪˌskrɪmɪnəˈbɪlɪti/",zh:"區辨度",ex_en:"Item discriminability separates groups.",ex_zh:"題目區辨度能分隔出不同群體。"},
+  "variance":{pos:"n.",phon:"/ˈveəriəns/",zh:"變異數;變異量",ex_en:"Low variance signals consensus.",ex_zh:"低變異數代表共識高。"},
+  "retained":{pos:"v.",phon:"/rɪˈteɪnd/",zh:"被保留的",ex_en:"Items meeting criteria are retained.",ex_zh:"符合標準的題目被保留。"},
+  "remainder":{pos:"n.",phon:"/rɪˈmeɪndər/",zh:"剩餘部分",ex_en:"The remainder enters review.",ex_zh:"剩餘者進入審查。"},
+  "de-duplication":{pos:"n.",phon:"/diː ˌdjuːplɪˈkeɪʃən/",zh:"去重;消除重複項",ex_en:"De-duplication uses cosine similarity.",ex_zh:"去重採用餘弦相似度。"},
+  "embedding":{pos:"n.",phon:"/ɪmˈbedɪŋ/",zh:"嵌入(NLP:把文字轉成向量)",ex_en:"Embeddings capture semantic meaning.",ex_zh:"嵌入向量能捕捉語意。"},
+  "cosine":{pos:"n.",phon:"/ˈkəʊsaɪn/",zh:"餘弦(數學)",ex_en:"Cosine similarity ranges from -1 to 1.",ex_zh:"餘弦相似度介於 -1 至 1 之間。"},
+  "similarities":{pos:"n.",phon:"/ˌsɪmɪˈlærɪtiz/",zh:"相似度",ex_en:"Pairwise similarities are computed.",ex_zh:"兩兩之間的相似度被計算出來。"},
+  "borderline":{pos:"adj.",phon:"/ˈbɔːrdərlaɪn/",zh:"邊界的;臨界的",ex_en:"Borderline cases need expert review.",ex_zh:"邊界案例需要專家審查。"},
+  "stratified-sampled":{pos:"adj.",phon:"/ˈstrætɪfaɪd ˈsæmpəld/",zh:"分層抽樣的",ex_en:"Reviews are stratified-sampled by rating.",ex_zh:"評論依評分分層抽樣。"},
+  "extracts":{pos:"v.",phon:"/ɪkˈstrækts/",zh:"提取;萃取",ex_en:"Each LLM extracts MOT mentions.",ex_zh:"每個 LLM 提取 MOT 提及。"},
+  "matches":{pos:"v.",phon:"/ˈmætʃɪz/",zh:"配對;比對",ex_en:"The system matches items to categories.",ex_zh:"系統將題目配對至類別。"},
+  "coverage":{pos:"n.",phon:"/ˈkʌvərɪdʒ/",zh:"覆蓋率",ex_en:"Coverage rates determine validity.",ex_zh:"覆蓋率決定效度。"},
+  "trigger":{pos:"v.",phon:"/ˈtrɪɡər/",zh:"觸發;引發",ex_en:"Low coverage will trigger revision.",ex_zh:"覆蓋率過低將觸發修訂。"},
+  "calibration":{pos:"n.",phon:"/ˌkælɪˈbreɪʃən/",zh:"校準;校正",ex_en:"Weight calibration anchors the score.",ex_zh:"權重校準是分數的錨點。"},
+  "anchored":{pos:"v.",phon:"/ˈæŋkərd/",zh:"以...為錨;以...為基準",ex_en:"Thresholds are anchored to a sub-sample.",ex_zh:"門檻以一個子樣本為基準。"},
+  "halt":{pos:"v.",phon:"/hɔːlt/",zh:"停止;暫停",ex_en:"This protocol will halt if needed.",ex_zh:"此協議將在必要時暫停。"},
+  "incentive":{pos:"n.",phon:"/ɪnˈsentɪv/",zh:"誘因;激勵",ex_en:"Monetary incentive boosts response rate.",ex_zh:"金錢誘因可提高回應率。"},
+  "ethics-approved":{pos:"adj.",phon:"/ˈeθɪks əˈpruːvd/",zh:"通過倫理審查的",ex_en:"All studies are ethics-approved.",ex_zh:"所有研究皆通過倫理審查。"},
+  "confirmatory":{pos:"adj.",phon:"/kənˈfɜːrmətɔːri/",zh:"驗證性的(統計:CFA 驗證性因素分析)",ex_en:"Confirmatory factor analysis tests structure.",ex_zh:"驗證性因素分析檢驗結構。"},
+  "factor":{pos:"n.",phon:"/ˈfæktər/",zh:"因素;因子(統計學)",ex_en:"Three-factor structure was supported.",ex_zh:"三因素結構獲得支持。"},
+  "recovery":{pos:"n.",phon:"/rɪˈkʌvəri/",zh:"還原;恢復(因素還原)",ex_en:"Factor recovery requires adequate N.",ex_zh:"因素還原需要足夠的樣本數。"},
+  "two-tailed":{pos:"adj.",phon:"/tuː teɪld/",zh:"雙尾的(統計檢定)",ex_en:"A two-tailed test is more conservative.",ex_zh:"雙尾檢定較保守。"},
+  "exceeds":{pos:"v.",phon:"/ɪkˈsiːdz/",zh:"超過;超出",ex_en:"This sample size far exceeds requirements.",ex_zh:"此樣本數遠超過所需。"},
+  "stimulus":{pos:"n.",phon:"/ˈstɪmjələs/",zh:"刺激物(實驗法:呈現給受試者的材料)",ex_en:"Stimulus reviews were balanced.",ex_zh:"刺激評論經過平衡設計。"},
+  "balanced":{pos:"adj.",phon:"/ˈbælənst/",zh:"平衡的",ex_en:"The design is balanced 4:4.",ex_zh:"設計呈 4:4 平衡。"},
+  "within-subject":{pos:"adj.",phon:"/wɪðˈɪn ˈsʌbdʒekt/",zh:"受試者內的(實驗設計)",ex_en:"Within-subject manipulation increases power.",ex_zh:"受試者內操弄能提高統計檢定力。"},
+  "randomized":{pos:"adj.",phon:"/ˈrændəmaɪzd/",zh:"隨機化的",ex_en:"Order is randomized.",ex_zh:"順序被隨機化。"},
+  "embedded":{pos:"adj.",phon:"/ɪmˈbedɪd/",zh:"嵌入的;內嵌的",ex_en:"Embedded items detect inattention.",ex_zh:"內嵌題目可偵測不專心作答。"},
+  "satisficing":{pos:"n.",phon:"/ˈsætɪsfaɪsɪŋ/",zh:"滿意化作答(問卷術語:不認真作答)",ex_en:"Satisficing biases survey results.",ex_zh:"滿意化作答會偏誤問卷結果。"},
+  "redundancy":{pos:"n.",phon:"/rɪˈdʌndənsi/",zh:"冗餘度;重複",ex_en:"Item redundancy is checked first.",ex_zh:"題目冗餘度先被檢查。"},
+  "extraction":{pos:"n.",phon:"/ɪkˈstrækʃən/",zh:"萃取(統計術語)",ex_en:"Maximum likelihood extraction is standard.",ex_zh:"最大概似萃取是標準作法。"},
+  "rotation":{pos:"n.",phon:"/rəʊˈteɪʃən/",zh:"轉軸(因素分析術語)",ex_en:"Promax rotation allows correlated factors.",ex_zh:"Promax 轉軸允許因素間相關。"},
+  "thresholds":{pos:"n.",phon:"/ˈθreʃhəʊldz/",zh:"門檻;閾值",ex_en:"Fit thresholds are pre-registered.",ex_zh:"配適度門檻已預先註冊。"},
+  "hierarchical":{pos:"adj.",phon:"/ˌhaɪəˈrɑːrkɪkəl/",zh:"階層的(統計:階層迴歸)",ex_en:"Hierarchical regression layers controls.",ex_zh:"階層迴歸層層加入控制變項。"},
+  "controls":{pos:"n.",phon:"/kənˈtrəʊlz/",zh:"控制變項",ex_en:"Demographic controls are entered first.",ex_zh:"人口統計控制變項先放入。"},
+  "demographics":{pos:"n.",phon:"/ˌdeməˈɡræfɪks/",zh:"人口統計學特徵",ex_en:"Demographics are summarized in Table 1.",ex_zh:"人口統計特徵摘要於表 1。"},
+  "manipulated":{pos:"v.",phon:"/məˈnɪpjəleɪtɪd/",zh:"被操弄(實驗法:控制自變項)",ex_en:"The factor was manipulated experimentally.",ex_zh:"此因子在實驗中被操弄。"},
+  "categorical":{pos:"adj.",phon:"/ˌkætəˈɡɒrɪkəl/",zh:"類別性的",ex_en:"Categorical variables need dummy coding.",ex_zh:"類別變項需虛擬編碼。"},
+  "binary":{pos:"adj.",phon:"/ˈbaɪnəri/",zh:"二元的",ex_en:"A binary choice was offered.",ex_zh:"提供了二元選擇。"},
+  "scenarios":{pos:"n.",phon:"/sɪˈnɑːriəʊz/",zh:"情境;情景",ex_en:"Six scenarios were presented.",ex_zh:"呈現了六個情境。"},
+  "simulated":{pos:"adj.",phon:"/ˈsɪmjəleɪtɪd/",zh:"模擬的",ex_en:"Simulated reviews mirror real ones.",ex_zh:"模擬評論與真實評論相似。"},
+  "fine":{pos:"adj.",phon:"/faɪn/",zh:"高級的;精緻的",ex_en:"Fine dining is high-involvement.",ex_zh:"高級餐飲屬高涉入。"},
+  "patronage":{pos:"n.",phon:"/ˈpætrənɪdʒ/",zh:"光顧(消費者行為術語)",ex_en:"Patronage decisions reflect loyalty.",ex_zh:"光顧決策反映忠誠度。"},
+  "ground-truth":{pos:"adj.",phon:"/ɡraʊnd truːθ/",zh:"真值;真實標籤(機器學習術語)",ex_en:"Ground-truth labels are revealed afterward.",ex_zh:"真值標籤在事後揭露。"},
+  "revealed":{pos:"v.",phon:"/rɪˈviːld/",zh:"被揭露;被公開",ex_en:"Labels are revealed post-task.",ex_zh:"標籤在任務後揭露。"},
+  "computed":{pos:"v.",phon:"/kəmˈpjuːtɪd/",zh:"被計算的",ex_en:"Accuracy is computed from |perceived - actual|.",ex_zh:"準確度由「感知-實際」絕對值計算。"},
+  "logistic":{pos:"adj.",phon:"/ləˈdʒɪstɪk/",zh:"邏輯的(統計:邏輯迴歸)",ex_en:"Logistic regression handles binary outcomes.",ex_zh:"邏輯迴歸處理二元結果。"},
+  "odds":{pos:"n.",phon:"/ɒdz/",zh:"勝算(統計術語)",ex_en:"The odds ratio quantifies effect.",ex_zh:"勝算比量化效應大小。"},
+  "interaction":{pos:"n.",phon:"/ˌɪntərˈækʃən/",zh:"交互作用",ex_en:"Interaction effects need probing.",ex_zh:"交互作用效應需要進一步檢驗。"},
+  "decomposition":{pos:"n.",phon:"/ˌdiːkɒmpəˈzɪʃən/",zh:"分解;拆解",ex_en:"Simple-effects decomposition follows.",ex_zh:"接著進行簡單效應分解。"},
+  "filed":{pos:"v.",phon:"/faɪld/",zh:"歸檔;提交申請",ex_en:"The protocol will be filed at OSF.",ex_zh:"此協議將提交至 OSF。"},
+  "shortfall":{pos:"n.",phon:"/ˈʃɔːrtfɔːl/",zh:"短缺;不足",ex_en:"Sample shortfall must be disclosed.",ex_zh:"樣本不足必須揭露。"},
+  "modification":{pos:"n.",phon:"/ˌmɒdɪfɪˈkeɪʃən/",zh:"修改;變動",ex_en:"Instrument modification needs disclosure.",ex_zh:"工具修改需要揭露。"},
+  "subgroup":{pos:"n.",phon:"/ˈsʌbɡruːp/",zh:"子群體",ex_en:"Subgroup analyses are exploratory.",ex_zh:"子群體分析屬探索性質。"},
+
+  // §5 EXPECTED RESULTS
+  "anticipate":{pos:"v.",phon:"/ænˈtɪsɪpeɪt/",zh:"預期;預料",ex_en:"We anticipate strong results.",ex_zh:"我們預期會有強有力的結果。"},
+  "yield":{pos:"v.",phon:"/jiːld/",zh:"產出;得出",ex_en:"The analysis will yield five factors.",ex_zh:"分析將產出五個因素。"},
+  "right-skewed":{pos:"adj.",phon:"/raɪt skjuːd/",zh:"右偏的(統計分布形狀)",ex_en:"The distribution is right-skewed.",ex_zh:"此分配呈右偏。"},
+  "ensemble":{pos:"n.",phon:"/ɒnˈsɒmbəl/",zh:"集成;集合(此處重複)",ex_en:"Ensemble methods reduce variance.",ex_zh:"集成方法可降低變異。"},
+  "loadings":{pos:"n.",phon:"/ˈləʊdɪŋz/",zh:"負荷量(因素分析術語)",ex_en:"Primary loadings exceed 0.65.",ex_zh:"主要負荷量超過 0.65。"},
+  "cross-loadings":{pos:"n.",phon:"/krɒs ˈləʊdɪŋz/",zh:"交叉負荷(因素分析術語)",ex_en:"Cross-loadings should be minimal.",ex_zh:"交叉負荷應該很小。"},
+  "indices":{pos:"n.",phon:"/ˈɪndɪsiːz/",zh:"指數(複數,單數 index)",ex_en:"Fit indices guide model evaluation.",ex_zh:"配適度指數指引模型評估。"},
+  "intercorrelations":{pos:"n.",phon:"/ˌɪntəkɒrəˈleɪʃənz/",zh:"相互相關",ex_en:"Inter-construct correlations are moderate.",ex_zh:"構念間相關度為中等。"},
+  "valence":{pos:"n.",phon:"/ˈveɪləns/",zh:"情緒方向(正/負面;心理學術語)",ex_en:"Review valence affects ratings.",ex_zh:"評論的情緒方向影響評分。"},
+  "regression":{pos:"n.",phon:"/rɪˈɡreʃən/",zh:"迴歸(統計學)",ex_en:"Regression assumes linearity.",ex_zh:"迴歸假設線性關係。"},
+  "yields":{pos:"v.",phon:"/jiːldz/",zh:"產出",ex_en:"This procedure yields stable estimates.",ex_zh:"此程序產出穩定的估計值。"},
+  "specificity":{pos:"n.",phon:"/ˌspesɪˈfɪsɪti/",zh:"特異度(統計/醫學術語)",ex_en:"Specificity is the true negative rate.",ex_zh:"特異度即真陰性率。"},
+  "sensitivity":{pos:"n.",phon:"/ˌsensɪˈtɪvɪti/",zh:"敏感度(統計/醫學術語)",ex_en:"High sensitivity catches more cases.",ex_zh:"高敏感度能捕捉更多病例。"},
+  "interaction":{pos:"n.",phon:"/ˌɪntərˈækʃən/",zh:"交互作用",ex_en:"The interaction effect is significant.",ex_zh:"交互作用效應顯著。"},
+  "pattern":{pos:"n.",phon:"/ˈpætən/",zh:"模式;形態",ex_en:"This pattern is highly informative.",ex_zh:"此模式具高度資訊價值。"},
+  "replicate":{pos:"v.",phon:"/ˈreplɪkeɪt/",zh:"複製;重現(科學術語)",ex_en:"This study aims to replicate prior work.",ex_zh:"本研究目的在重現先前研究。"},
+  "central":{pos:"adj.",phon:"/ˈsentrəl/",zh:"中央的(ELM 術語:central processing 中央路徑)",ex_en:"Central processing is effortful.",ex_zh:"中央路徑處理需投入心力。"},
+  "peripheral":{pos:"adj.",phon:"/pəˈrɪfərəl/",zh:"周邊的(ELM 術語:peripheral processing 周邊路徑)",ex_en:"Peripheral processing relies on cues.",ex_zh:"周邊路徑處理依賴線索。"},
+  "robustness":{pos:"n.",phon:"/rəʊˈbʌstnəs/",zh:"穩健度(統計術語)",ex_en:"Robustness checks are essential.",ex_zh:"穩健性檢驗不可或缺。"},
+  "replicability":{pos:"n.",phon:"/ˌreplɪkəˈbɪlɪti/",zh:"可重現性",ex_en:"Replicability is a scientific virtue.",ex_zh:"可重現性是科學的美德。"},
+  "adversarial":{pos:"adj.",phon:"/ˌædvərˈseəriəl/",zh:"對抗性的(機器學習術語)",ex_en:"Adversarial examples expose weaknesses.",ex_zh:"對抗性範例暴露弱點。"},
+  "evade":{pos:"v.",phon:"/ɪˈveɪd/",zh:"規避;逃避",ex_en:"They train models to evade detection.",ex_zh:"他們訓練模型規避偵測。"},
+  "degrade":{pos:"v.",phon:"/dɪˈɡreɪd/",zh:"退化;劣化",ex_en:"Performance will degrade over time.",ex_zh:"效能將隨時間劣化。"},
+  "exploratorily":{pos:"adv.",phon:"/ɪkˈsplɒrətərɪli/",zh:"探索性地",ex_en:"Age is exploratorily examined.",ex_zh:"年齡作為探索性檢驗。"},
+
+  // §6 DISCUSSION
+  "cumulative":{pos:"adj.",phon:"/ˈkjuːmjələtɪv/",zh:"累積的",ex_en:"Cumulative significance grows over studies.",ex_zh:"累積性的重要性會在多篇研究中增長。"},
+  "obtained":{pos:"v.",phon:"/əbˈteɪnd/",zh:"被得到的;獲得的",ex_en:"Should the results be obtained...",ex_zh:"如能取得這些結果……。"},
+  "establish":{pos:"v.",phon:"/ɪˈstæblɪʃ/",zh:"確立;建立",ex_en:"This would establish a new norm.",ex_zh:"這將確立一個新的規範。"},
+  "originate":{pos:"v.",phon:"/əˈrɪdʒɪneɪt/",zh:"源自(同前)",ex_en:"The idea originated in Vienna.",ex_zh:"此構想源自維也納。"},
+  "machinery":{pos:"n.",phon:"/məˈʃiːnəri/",zh:"機制;工具(此處比喻為「概念工具」)",ex_en:"Theoretical machinery enables disentangling.",ex_zh:"理論機制使釐清成為可能。"},
+  "disentangle":{pos:"v.",phon:"/ˌdɪsɪnˈtæŋɡəl/",zh:"釐清;解開糾纏",ex_en:"We disentangle two competing effects.",ex_zh:"我們把兩個競爭效應釐清。"},
+  "address":{pos:"v.",phon:"/əˈdres/",zh:"處理;應對",ex_en:"This addresses the gap directly.",ex_zh:"這直接處理該缺口。"},
+  "rather":{pos:"adv.",phon:"/ˈrɑːðə/",zh:"而是",ex_en:"Substance rather than form.",ex_zh:"重要的是內容而非形式。"},
+  "diagnostic":{pos:"adj.",phon:"/ˌdaɪəɡˈnɒstɪk/",zh:"診斷的;診斷模式的",ex_en:"This is in diagnostic mode.",ex_zh:"這仍處於診斷模式。"},
+  "coherent":{pos:"adj.",phon:"/kəʊˈhɪərənt/",zh:"連貫的;條理一致的",ex_en:"A coherent framework guides action.",ex_zh:"條理一致的架構能指引行動。"},
+  "platforms":{pos:"n.",phon:"/ˈplætfɔːmz/",zh:"平台",ex_en:"Platforms are now key infrastructure.",ex_zh:"平台如今已是關鍵基礎設施。"},
+  "regulators":{pos:"n.",phon:"/ˈreɡjəleɪtərz/",zh:"監管機關",ex_en:"Regulators shape platform behavior.",ex_zh:"監管機關塑造平台行為。"},
+  "deployable":{pos:"adj.",phon:"/dɪˈplɔɪəbəl/",zh:"可部署的",ex_en:"This is a deployable design pattern.",ex_zh:"這是一個可部署的設計型態。"},
+  "supplements":{pos:"v.",phon:"/ˈsʌplɪments/",zh:"補充",ex_en:"This supplements existing methods.",ex_zh:"這對既有方法形成補充。"},
+  "structured":{pos:"adj.",phon:"/ˈstrʌktʃəd/",zh:"結構化的",ex_en:"Structured signals reduce noise.",ex_zh:"結構化訊號可降低雜訊。"},
+  "onboarding":{pos:"n.",phon:"/ˈɒnbɔːdɪŋ/",zh:"使用者導入(平台術語)",ex_en:"Onboarding modules can teach skills.",ex_zh:"使用者導入模組可教授技能。"},
+  "discernment":{pos:"n.",phon:"/dɪˈsɜːnmənt/",zh:"識別力(同前)",ex_en:"Critical discernment is teachable.",ex_zh:"批判性識別力是可教的。"},
+  "credible":{pos:"adj.",phon:"/ˈkredəbəl/",zh:"可信的",ex_en:"A credible signaling pathway is needed.",ex_zh:"需要一條可信的信號傳遞路徑。"},
+  "regulatory":{pos:"adj.",phon:"/ˈreɡjələtəri/",zh:"監管的",ex_en:"Regulatory bodies require evidence.",ex_zh:"監管機關需要證據。"},
+  "vocabulary":{pos:"n.",phon:"/vəˈkæbjələri/",zh:"詞彙;用語體系",ex_en:"This offers shared vocabulary.",ex_zh:"這提供了共通的用語體系。"},
+  "mandated":{pos:"adj.",phon:"/ˈmændeɪtɪd/",zh:"被強制要求的;法規要求的",ex_en:"Mandated disclosure changes behavior.",ex_zh:"強制揭露會改變行為。"},
+  "complementary":{pos:"adj.",phon:"/ˌkɒmplɪˈmentəri/",zh:"互補的",ex_en:"The two policies are complementary.",ex_zh:"這兩項政策互為補充。"},
+  "asymmetry":{pos:"n.",phon:"/eɪˈsɪmɪtri/",zh:"不對稱(同前)",ex_en:"Information asymmetry persists.",ex_zh:"資訊不對稱持續存在。"},
+  "monitoring":{pos:"n.",phon:"/ˈmɒnɪtərɪŋ/",zh:"監控;監測",ex_en:"Population-level monitoring is feasible.",ex_zh:"母體層級的監測是可行的。"},
+  "analogous":{pos:"adj.",phon:"/əˈnæləɡəs/",zh:"類比的;相似的",ex_en:"Analogous to inflation indices.",ex_zh:"類比於通膨指數。"},
+  "trilogy":{pos:"n.",phon:"/ˈtrɪlədʒi/",zh:"三部曲",ex_en:"This three-paper trilogy is integrated.",ex_zh:"此三部曲論文被整合。"},
+  "synthesizes":{pos:"v.",phon:"/ˈsɪnθəsaɪzɪz/",zh:"綜合;整合",ex_en:"This paper synthesizes prior work.",ex_zh:"本文綜合先前研究。"},
+  "scaffolding":{pos:"n.",phon:"/ˈskæfəldɪŋ/",zh:"鷹架;支架(教育/概念用語)",ex_en:"Theoretical scaffolding aids learning.",ex_zh:"理論鷹架有助於學習。"},
+  "formalizes":{pos:"v.",phon:"/ˈfɔːməlaɪzɪz/",zh:"使形式化(同前)",ex_en:"This paper formalizes the trilogy.",ex_zh:"本文把三部曲予以形式化。"},
+  "submission":{pos:"n.",phon:"/səbˈmɪʃən/",zh:"投稿;提交",ex_en:"Submission to Q1 journals is the goal.",ex_zh:"投稿至 Q1 期刊是目標。"},
+
+  // §7 LIMITATIONS
+  "overlap":{pos:"n.",phon:"/ˌəʊvəˈlæp/",zh:"重疊",ex_en:"Training corpus overlap is concerning.",ex_zh:"訓練語料的重疊令人關切。"},
+  "frontier":{pos:"adj.",phon:"/ˈfrʌntɪər/",zh:"前沿的",ex_en:"Frontier LLMs share much training data.",ex_zh:"前沿 LLM 共享大量訓練資料。"},
+  "substantial":{pos:"adj.",phon:"/səbˈstænʃəl/",zh:"大量的;實質的",ex_en:"There is substantial overlap.",ex_zh:"有大量重疊。"},
+  "representational":{pos:"adj.",phon:"/ˌreprɪzenˈteɪʃənəl/",zh:"表徵的(機器學習術語)",ex_en:"Representational biases are subtle.",ex_zh:"表徵性的偏誤難以察覺。"},
+  "biases":{pos:"n.",phon:"/ˈbaɪəsɪz/",zh:"偏誤(複數)",ex_en:"Biases compound over training.",ex_zh:"偏誤在訓練過程中複合放大。"},
+  "mitigation":{pos:"n.",phon:"/ˌmɪtɪˈɡeɪʃən/",zh:"緩解;緩和措施",ex_en:"The mitigation strategy is in §4.",ex_zh:"緩解策略列於第四節。"},
+  "calibrated":{pos:"adj.",phon:"/ˈkælɪbreɪtɪd/",zh:"被校準的",ex_en:"The instrument is calibrated for restaurants.",ex_zh:"此工具是針對餐廳校準的。"},
+  "generalizability":{pos:"n.",phon:"/ˌdʒenərəlaɪzəˈbɪlɪti/",zh:"可推廣性",ex_en:"Generalizability beyond restaurants is unknown.",ex_zh:"超出餐廳的可推廣性尚未驗證。"},
+  "industry-specific":{pos:"adj.",phon:"/ˈɪndəstri spəˈsɪfɪk/",zh:"產業特定的",ex_en:"Industry-specific re-execution is needed.",ex_zh:"需要進行產業特定的重新執行。"},
+  "parallel":{pos:"adj.",phon:"/ˈpærəlel/",zh:"並行的;對照的",ex_en:"Parallel translations are provided.",ex_zh:"提供了對照翻譯。"},
+  "linguistic":{pos:"adj.",phon:"/lɪŋˈɡwɪstɪk/",zh:"語言的;語言學的",ex_en:"Cross-linguistic validation matters.",ex_zh:"跨語言驗證很重要。"},
+  "reserved":{pos:"adj.",phon:"/rɪˈzɜːvd/",zh:"被保留的;留待...",ex_en:"This is reserved for future work.",ex_zh:"此事留待未來研究。"},
+  "brittleness":{pos:"n.",phon:"/ˈbrɪtəlnəs/",zh:"脆弱性",ex_en:"Adversarial brittleness is a known weakness.",ex_zh:"對抗式脆弱性是已知的弱點。"},
+  "sophisticated":{pos:"adj.",phon:"/səˈfɪstɪkeɪtɪd/",zh:"精密的;精緻的",ex_en:"More sophisticated generators emerge.",ex_zh:"更精密的生成器持續出現。"},
+  "distinguishability":{pos:"n.",phon:"/dɪˌstɪŋɡwɪʃəˈbɪlɪti/",zh:"可區辨性",ex_en:"Linguistic distinguishability narrows.",ex_zh:"語言可區辨性正在收窄。"},
+  "conceptualized":{pos:"v.",phon:"/kənˈseptʃʊəlaɪzd/",zh:"被概念化的",ex_en:"It should be conceptualized as one layer.",ex_zh:"應被概念化為其中一層。"},
+  "defense-in-depth":{pos:"n.",phon:"/dɪˈfens ɪn depθ/",zh:"縱深防禦(資訊安全術語)",ex_en:"Defense-in-depth has multiple layers.",ex_zh:"縱深防禦具有多重層級。"},
+  "standalone":{pos:"adj.",phon:"/ˈstændəˌləʊn/",zh:"獨立的;單獨的",ex_en:"This is not a standalone solution.",ex_zh:"這不是一個獨立的解決方案。"},
+  "rigorous":{pos:"adj.",phon:"/ˈrɪɡərəs/",zh:"嚴謹的",ex_en:"Rigorous ground-truth is harder to obtain.",ex_zh:"嚴謹的真值較難取得。"},
+  "verified":{pos:"adj.",phon:"/ˈverɪfaɪd/",zh:"已驗證的",ex_en:"Experimentally verified consumers.",ex_zh:"實驗驗證過的消費者。"},
+  "cross-researcher":{pos:"adj.",phon:"/krɒs rɪˈsɜːtʃər/",zh:"跨研究者的",ex_en:"Cross-researcher audits are absent.",ex_zh:"缺乏跨研究者的審查。"},
+  "audits":{pos:"n.",phon:"/ˈɔːdɪts/",zh:"稽核;審查",ex_en:"Independent audits build trust.",ex_zh:"獨立審查能建立信任。"},
+  "acknowledged":{pos:"v.",phon:"/əkˈnɒlɪdʒd/",zh:"被承認的",ex_en:"This limitation is acknowledged.",ex_zh:"此限制已被承認。"},
+  "checkpoint":{pos:"n.",phon:"/ˈtʃekpɔɪnt/",zh:"檢查點;審核點",ex_en:"This is a pre-execution checkpoint.",ex_zh:"這是一個執行前的檢查點。"},
+  "logged":{pos:"v.",phon:"/lɒɡd/",zh:"被記錄的",ex_en:"All deviations are logged.",ex_zh:"所有偏離均被記錄。"},
+  "dynamics":{pos:"n.",phon:"/daɪˈnæmɪks/",zh:"動態;變遷",ex_en:"Longitudinal dynamics need study.",ex_zh:"縱貫動態需要研究。"},
+  "evolve":{pos:"v.",phon:"/ɪˈvɒlv/",zh:"演進;演化",ex_en:"The threat will evolve over time.",ex_zh:"威脅會隨時間演進。"},
+  "panel":{pos:"adj.",phon:"/ˈpænəl/",zh:"小組的;追蹤性的(panel design 追蹤性研究設計)",ex_en:"A panel design tracks individuals.",ex_zh:"追蹤性設計追蹤個體。"},
+  "comparative":{pos:"adj.",phon:"/kəmˈpærətɪv/",zh:"比較的",ex_en:"Comparative studies are illuminating.",ex_zh:"比較性研究具啟發性。"},
+  "settings":{pos:"n.",phon:"/ˈsetɪŋz/",zh:"場域;脈絡",ex_en:"Findings vary across settings.",ex_zh:"研究發現會因場域而異。"},
+  "game-theoretic":{pos:"adj.",phon:"/ɡeɪm θiːəˈretɪk/",zh:"賽局理論的",ex_en:"Game-theoretic modeling is one tool.",ex_zh:"賽局理論建模是其中一種工具。"},
+  "arms race":{pos:"n.",phon:"/ɑːmz reɪs/",zh:"軍備競賽(此處比喻為「對抗式競逐」)",ex_en:"The detection arms race continues.",ex_zh:"偵測上的對抗式競逐持續。"},
+  "sustainable":{pos:"adj.",phon:"/səˈsteɪnəbəl/",zh:"可持續的",ex_en:"Sustainable platform design matters.",ex_zh:"可持續的平台設計很重要。"},
+  "adoption":{pos:"n.",phon:"/əˈdɒpʃən/",zh:"採納;採用",ex_en:"Adoption rates determine impact.",ex_zh:"採納率決定影響力。"},
+  "shift":{pos:"v.",phon:"/ʃɪft/",zh:"轉變;移動",ex_en:"They shift behavior in response.",ex_zh:"他們因應而轉變行為。"},
+  "natural":{pos:"adj.",phon:"/ˈnætʃərəl/",zh:"自然的(natural experiment 自然實驗)",ex_en:"Natural experiments aid causal inference.",ex_zh:"自然實驗有助因果推論。"},
+  "quasi-experimental":{pos:"adj.",phon:"/ˈkweɪzaɪ ɪkˌsperɪˈmentəl/",zh:"準實驗的(研究法)",ex_en:"Quasi-experimental designs lack randomization.",ex_zh:"準實驗設計缺乏隨機分派。"},
+
+  // §8 CONCLUSION
+  "argued":{pos:"v.",phon:"/ˈɑːɡjuːd/",zh:"主張過(同前)",ex_en:"We have argued this throughout.",ex_zh:"我們全文都在主張這一點。"},
+  "data-cleanliness":{pos:"adj.",phon:"/ˈdeɪtə ˈklenlinəs/",zh:"資料清理的",ex_en:"This is more than a data-cleanliness issue.",ex_zh:"這不僅僅是個資料清理的問題。"},
+  "implements":{pos:"v.",phon:"/ˈɪmplɪments/",zh:"實作;實施",ex_en:"This implements the dual-track principle.",ex_zh:"這實作了雙軌原則。"},
+  "execution":{pos:"n.",phon:"/ˌeksɪˈkjuːʃən/",zh:"執行",ex_en:"Successful execution would establish...",ex_zh:"成功的執行將確立……。"},
+  "contributable":{pos:"adj.",phon:"/kənˈtrɪbjʊtəbəl/",zh:"可貢獻的(學術用法)",ex_en:"Gap D as a contributable construct.",ex_zh:"作為可貢獻構念的 Gap D。"},
+  "pre-disclosed":{pos:"adj.",phon:"/priː dɪsˈkləʊzd/",zh:"預先揭露的",ex_en:"Limitations are pre-disclosed.",ex_zh:"限制已被預先揭露。"},
+  "essential":{pos:"adj.",phon:"/ɪˈsenʃəl/",zh:"不可或缺的;本質的",ex_en:"This format is essential here.",ex_zh:"此一格式在此不可或缺。"},
+  "discipline":{pos:"v.",phon:"/ˈdɪsəplɪn/",zh:"約束;規制(同前動詞用法)",ex_en:"Pre-registration disciplines our claims.",ex_zh:"預先註冊約束了我們的主張。"},
+  "falsifiable":{pos:"adj.",phon:"/ˈfɔːlsɪfaɪəbəl/",zh:"可被否證的(科學哲學術語)",ex_en:"Claims should be falsifiable by data.",ex_zh:"主張應能被資料否證。"},
+  "selective":{pos:"adj.",phon:"/sɪˈlektɪv/",zh:"選擇性的",ex_en:"Selective reporting biases literature.",ex_zh:"選擇性報告會扭曲文獻。"},
+  "scrutiny":{pos:"n.",phon:"/ˈskruːtɪni/",zh:"細密審視;檢視",ex_en:"Peer scrutiny improves quality.",ex_zh:"同儕審視能提升品質。"},
+  "invite":{pos:"v.",phon:"/ɪnˈvaɪt/",zh:"邀請",ex_en:"We invite peer feedback.",ex_zh:"我們歡迎同儕回饋。"},
+  "emerging":{pos:"adj.",phon:"/ɪˈmɜːdʒɪŋ/",zh:"正在浮現的",ex_en:"Emerging standards favor pre-registration.",ex_zh:"正在浮現的標準有利於預先註冊。"},
+  "credible":{pos:"adj.",phon:"/ˈkredəbəl/",zh:"可信的(同前)",ex_en:"Credible service-research science.",ex_zh:"可信的服務研究科學。"}
+};
+
+// ============================================
+// CONTENT — sections will be progressively loaded
+// ============================================
+const SECTIONS = {
+  abstract: {
+    label: "Section I",
+    title: "Abstract",
+    roman: "摘要",
+    content: [
+      { type: "sentence", en: "This study [[introduces]], [[formally]] [[distinguishes]], and [[operationalizes]] **Gap D (Digital Information Pollution Gap)** as a theoretically independent [[extension]] of the Parasuraman-Zeithaml-Berry (PZB, 1985) service quality gap model.", zh: "本研究正式提出、明確區分,並將「Gap D 數位資訊污染缺口」操作化,主張其為 Parasuraman-Zeithaml-Berry(PZB, 1985)服務品質缺口模型在理論上的獨立延伸。" },
+      { type: "sentence", en: "[[Drawing on]] three theoretical [[pillars]]—Drucker's (1993) [[accountability]] [[framework]], Spence's (1973) [[signaling]] theory, and Akerlof's (1970) market failure [[mechanism]]—we [[argue]] that fake online reviews [[systematically]] [[pollute]] consumers' [[pre-encounter]] [[expectations]] (E_polluted) relative to [[authentic]] [[expectations]] (E_authentic), producing a gap (Gap D = E_polluted − E_authentic) that [[propagates]] into PZB's traditional Gap 5 in a [[directionally]] [[identifiable]] manner.", zh: "本研究援引三大理論支柱——Drucker(1993)問責性架構、Spence(1973)信號理論、Akerlof(1970)市場失靈機制——主張線上假評會系統性地污染消費者「接觸前的期望」(E_polluted),使其偏離真實期望(E_authentic),從而產生一個缺口(Gap D = E_polluted − E_authentic),並以方向可辨的方式延伸至 PZB 的傳統 Gap 5。" },
+      { type: "sentence", en: "To [[operationalize]] this [[construct]], we develop **EAQUAL-15** (Expectation Authenticity Quality Scale), a 15-item three-dimensional consumer-side [[instrument]] measuring Source [[Credibility]] (SC), Content Authenticity (CA), and Experience Consistency (EC).", zh: "為將此構念操作化,本研究發展「EAQUAL-15」(期望真實性品質量表),一份 15 題、三構面的消費者端測量工具,衡量「來源可信度(SC)」、「內容真實性(CA)」、「體驗一致性(EC)」。" },
+      { type: "sentence", en: "We [[complement]] EAQUAL with **MACS** (MOT Authenticity Certification System), a [[platform-side]] [[click-based]] [[assessment]] tool whose [[semantic]] item bank is constructed via three-LLM [[ensemble]] [[protocol]] with [[empirical]] [[validation]] against 1,000 real Google Maps reviews.", zh: "本研究輔以 MACS(MOT 真實性認證系統)——一個平台端、點選式的評分工具——其語意題庫透過三家 LLM 集成協議建構,並以 1,000 則真實 Google Maps 評論進行實證驗證。" },
+      { type: "sentence", en: "Together, EAQUAL and MACS form a dual-track [[mechanism]] implementing the **Expectation Honesty Management (EHM)** principle.", zh: "EAQUAL 與 MACS 共同構成一個「雙軌機制」,落實「期望誠實管理(EHM)」原則。" },
+      { type: "sentence", en: "Six hypotheses (H1a-H1c [[psychometric]]; H2a-H2c MACS [[efficacy]]) are pre-registered with [[explicit]] [[predicted]] [[effect sizes]] [[derived]] from prior service quality [[literature]].", zh: "本研究預先註冊六項假設(H1a-H1c 心理計量;H2a-H2c MACS 效能),並依先行服務品質文獻明確標示預期效應量。" },
+      { type: "sentence", en: "We [[outline]] a three-[[phase]] [[empirical]] [[validation]] involving (Phase 1) LLM-based [[semantic]] database construction, (Phase 2) scale validation via N=800 consumer survey, and (Phase 3) MACS effectiveness experiment with N=240 [[participants]].", zh: "我們概述三階段實證驗證:(1)以 LLM 為基礎的語意資料庫建構;(2)以 N=800 消費者調查驗證量表;(3)以 N=240 受試者進行 MACS 效能實驗。" },
+      { type: "sentence", en: "Expected [[contributions]] [[span]] theoretical ([[positioning]] Gap D as [[institutionally]] independent from PZB Gap 4), [[methodological]] (first consumer-side authenticity measurement [[instrument]]), and policy ([[responding]] to Akerlof's dual-end [[intervention]] call) [[domains]].", zh: "預期貢獻橫跨理論(將 Gap D 定位為與 PZB Gap 4 制度上獨立)、方法學(首個消費者端真實性測量工具)、政策(回應 Akerlof 對「雙端介入」的理論召喚)三大領域。" },
+      { type: "sentence", en: "[[Boundary]] conditions per the [[Elaboration]] [[Likelihood]] Model (ELM; Petty & Cacioppo, 1986) are [[explicitly]] [[specified]].", zh: "本研究依「精細可能性模型(ELM;Petty & Cacioppo, 1986)」明確標示其邊界條件。" },
+      { type: "keywords", label: "Keywords", items: ["Fake Review Detection 假評偵測", "Service Quality Gap 服務品質缺口", "Expectation Distortion 期望扭曲", "EAQUAL Scale", "MACS", "Information Asymmetry 資訊不對稱", "Pre-Registered Report"] }
+    ]
+  },
+
+  abstract_zh: {
+    label: "Section I-B",
+    title: "中文摘要",
+    roman: "Chinese Abstract",
+    content: [
+      { type: "zh-block", html: "本研究正式提出並系統性建構「<strong>Gap D 數位資訊污染缺口</strong>」概念,主張其為 PZB(Parasuraman、Zeithaml、Berry, 1985)服務品質缺口模型在數位時代的<strong>獨立理論延伸</strong>而非 Gap 4 的子集。本研究援引 Drucker(1993)問責性、Spence(1973)信號理論、Akerlof(1970)市場失靈三大理論支柱,論證假評對消費者購前期望(E_polluted)相對於真實期望(E_authentic)的系統性污染,並以 Gap D = E_polluted − E_authentic 之公式化形式整合至 PZB 框架。" },
+      { type: "zh-block", html: "為將此構念操作化,本研究發展 <strong>EAQUAL-15 期望真實性品質量表</strong>——15 題、三構面(來源可信度 SC、內容真實性 CA、體驗一致性 EC)之消費者端測量工具,並輔以 <strong>MACS(MOT 真實性認證系統)</strong>——平台端點選式評分工具——共同構成「期望誠實管理(EHM)」雙軌機制。MACS 之語意題庫採三家 LLM ensemble 建構並以 1,000 則 Google Maps 真實評論校驗。" },
+      { type: "zh-block", html: "本研究預先註冊六項假設(H1a-H1c 心理計量;H2a-H2c MACS 效能)並依先行服務品質文獻明示預期效應量區間。實證設計採三階段:(1)LLM 語意題庫建構;(2)N=800 消費者調查驗證量表;(3)N=240 受試者實驗驗證 MACS 干預效果。理論貢獻在於確立 Gap D 為與 PZB Gap 4 制度性獨立之新缺口、提供首個消費者端真實性測量工具、回應 Akerlof(1970)對「雙端介入機制」之理論召喚。本研究亦明確指認精細可能性模型(ELM;Petty & Cacioppo, 1986)之雙條件邊界。" },
+      { type: "keywords", label: "關鍵詞", items: ["假評偵測", "服務品質缺口", "期望扭曲", "EAQUAL 量表", "MACS", "資訊不對稱", "Pre-Registered Report"] }
+    ]
+  },
+
+  lit: {
+    label: "Section III",
+    title: "Literature Review",
+    roman: "文獻回顧",
+    content: [
+      { type: "h3", en: "2.1 PZB Service Quality Gap Model in the Digital Era", zh: "2.1 數位時代下的 PZB 服務品質缺口模型" },
+      { type: "sentence", en: "Parasuraman, Zeithaml, and Berry's (1985, 1988) **seminal contribution** established the foundational equation **SQ = P − E**, framing service quality not as a producer-defined attribute but as a customer-perceived gap.", zh: "Parasuraman、Zeithaml 與 Berry(1985, 1988)的開創性研究確立了基礎方程式「SQ = P − E」,把服務品質定位為「不是由生產者定義的屬性,而是由顧客感知到的缺口」。" },
+      { type: "sentence", en: "Their five-gap structural model has accumulated over 30,000 citations and remains the dominant service quality framework.", zh: "他們的五缺口結構模型已累積超過 30,000 筆引用,至今仍是服務品質研究中最具主導地位的架構。" },
+      { type: "sentence", en: "The original RATER dimensions (Reliability, Assurance, Tangibles, Empathy, Responsiveness) were operationalized in pre-digital contexts where consumer-provider contact was assumed to be predominantly face-to-face.", zh: "原始的 RATER 五構面(可靠性、保證性、有形性、同理心、回應性)是在「前數位時代」的脈絡下被操作化的,當時的假設是消費者與業者的接觸主要是面對面。" },
+      { type: "sentence", en: "In purely digital service contexts, however, the **perception contact medium** of each RATER dimension undergoes transformation: Tangibles becomes platform interface and review imagery; Empathy becomes asynchronous text-based responses; Reliability becomes platform-aggregated rating consistency.", zh: "然而,在純數位服務情境下,RATER 各構面的「感知接觸媒介」都會經歷轉換:有形性變成「平台介面與評論圖像」、同理心變成「非同步的文字回應」、可靠性變成「平台聚合的評分一致性」。" },
+      { type: "sentence", en: "This transformation does not invalidate the dimensions—it relocates the [[locus]] of perception formation from real-time encounter to **pre-encounter mediated information**.", zh: "這個轉換並不否定這些構面——它只是把感知形成的「立足點」從「即時的服務接觸」轉移到「接觸前的中介資訊」。" },
+      { type: "sentence", en: "Reviews become a primary perception medium *before any direct service contact occurs*.", zh: "在任何直接服務接觸發生之「前」,評論便已成為一個主要的感知媒介。" },
+      { type: "sentence", en: "Critically, PZB's Gap 4 (the discrepancy between provider external communications and delivered service) was conceptualized when the dominant external communications were *provider-originated* (advertising, promotional brochures, in-store signage).", zh: "關鍵的是,PZB 的 Gap 4(業者對外溝通與實際交付之間的差距)是在「對外溝通主要源自業者本身」(廣告、宣傳手冊、店內標示)的時代背景下被概念化的。" },
+      { type: "sentence", en: "The advent of consumer-generated content and its subsequent capture by manipulation actors has introduced a new category of expectation-shaping information that the original PZB framework does not architecturally accommodate.", zh: "消費者生成內容的出現、以及其後被操弄行為者所「劫持」的現象,引入了一個全新類別的「期望塑形資訊」——這個類別在 PZB 原始架構中並沒有被結構性地容納進去。" },
+
+      { type: "h3", en: "2.2 MOT Theory and the Authenticity Signal Layer", zh: "2.2 MOT 理論與真實性訊號層" },
+      { type: "sentence", en: "Carlzon's (1987) **Moment of Truth (MOT)** theory locates service quality judgment at every concrete service contact instant.", zh: "Carlzon(1987)的「關鍵時刻(MOT)」理論把「服務品質判斷」定位在每一個具體的服務接觸瞬間。" },
+      { type: "sentence", en: "[[Authentic]] experiencers' reviews necessarily contain MOT-anchored details—specific waiting durations, interaction sequences, sensory particulars, contingent events.", zh: "真實親歷者的評論必然會包含「以 MOT 為錨點」的細節——具體的等待時間、互動的順序、感官的細節、突發的事件。" },
+      { type: "sentence", en: "Fake review producers, lacking actual experience, can only invoke generic affective labels (Salminen et al., 2025; Meppelink et al., 2025).", zh: "假評製造者由於缺乏實際的親身體驗,只能訴諸泛泛的情緒標籤(Salminen et al., 2025; Meppelink et al., 2025)。" },
+      { type: "sentence", en: "This [[asymmetry]] is not merely descriptive; it is **psycholinguistically diagnostic**.", zh: "此一不對稱性不僅是描述性的,更是「心理語言學上具有診斷功能」的。" },
+      { type: "sentence", en: "Salminen et al. (2025), analyzing 3,070 reviews, demonstrated that fake reviews [[exhibit]] significantly lower [[sensory]] word density and cognitive specificity than authentic reviews (d = 0.62, p < .001).", zh: "Salminen et al.(2025)分析 3,070 則評論,證實假評在「感官詞彙密度」與「認知具體度」上顯著低於真評(d = 0.62, p < .001)。" },
+      { type: "sentence", en: "This empirical regularity grounds our claim that **MOT semantic specificity is an approximate necessary condition for review authenticity**: authentic reviews almost necessarily contain contact-detail anchors, though the converse (contact-detail-bearing reviews are necessarily authentic) does not hold strictly—a critical methodological boundary we address in §3.", zh: "此一實證規律支撐了我們的主張:「MOT 語意具體度是評論真實性的近似必要條件」——真評幾乎必然包含接觸細節的錨點,但反向命題(包含接觸細節的評論必然為真)並不嚴格成立——這是一個關鍵的方法學邊界,我們在第三節中處理。" },
+
+      { type: "h3", en: "2.3 Information Asymmetry: Spence, Akerlof, and the Lemon-Signal Problem", zh: "2.3 資訊不對稱:Spence、Akerlof 與檸檬訊號問題" },
+      { type: "sentence", en: "Spence's (1973) signaling theory establishes that signal credibility is determined by signal-source [[identifiability]] and signal cost structure.", zh: "Spence(1973)的信號理論指出:信號的可信度是由「信號來源的可識別性」與「信號的成本結構」共同決定。" },
+      { type: "sentence", en: "Provider-originated advertising bears identification (the producer is known) and is subject to legal accountability for unfair claims, generating consumer **persuasion knowledge** (Friestad & Wright, 1994) that automatically discounts promotional puffery.", zh: "業者源頭的廣告帶有「身分識別」(生產者是已知的)且受到不實宣稱的法律問責,因此會啟動消費者的「說服知識」(Friestad & Wright, 1994),自動把廣告式誇大其詞打折扣。" },
+      { type: "sentence", en: "Fake reviews invert this: producers are anonymous, signal cost approaches zero (paste-and-post operations), and consumer persuasion knowledge does not activate because the signal is presented as peer-originated.", zh: "假評則把這個關係反轉:製造者匿名、訊號成本趨近於零(複製-貼上的操作),且消費者的「說服知識」並不會被啟動,因為訊號是以「同儕產出」的形式出現。" },
+      { type: "sentence", en: "Akerlof's (1970) market for [[lemons]] provides the deeper structural diagnosis.", zh: "Akerlof(1970)的「檸檬市場」理論則提供了更深層的結構性診斷。" },
+      { type: "sentence", en: "When buyers cannot reliably distinguish high-quality from low-quality goods (or in our case, [[authentic]] from fabricated information), market mechanisms can systematically drive out high-quality offerings (or honest providers), producing a **pooling [[equilibrium]]** at suboptimal social welfare.", zh: "當買方無法可靠地區分高品質與低品質商品(或就我們的情境而言:無法區分真實資訊與捏造資訊)時,市場機制會系統性地把高品質供給(或誠實業者)逼出市場,形成一個社會福利次佳的「混合均衡」。" },
+      { type: "sentence", en: "Akerlof explicitly identified the **dual-end intervention requirement**: reducing market failure requires *both* enhanced buyer-side [[discernment]] *and* reshaped seller-side incentives.", zh: "Akerlof 明確指出「雙端介入」的必要性:要減輕市場失靈,「同時」需要強化買方端的識別能力與重塑賣方端的誘因結構。" },
+      { type: "sentence", en: "Most prior fake review research operates only on one end (typically buyer-side detection); our framework explicitly addresses both.", zh: "絕大多數先前的假評研究只在單一端運作(通常是買方端的偵測);我們的架構明確處理雙端。" },
+
+      { type: "h3", en: "2.4 Fake Review Detection: Technical Stream vs. Consumer-Side Gap", zh: "2.4 假評偵測:技術流派 vs. 消費者端缺口" },
+      { type: "sentence", en: "The dominant FRD literature stream focuses on automated detection.", zh: "主流的 FRD 文獻聚焦在「自動偵測」上。" },
+      { type: "sentence", en: "Mohawesh et al. (2021), reviewing 250+ studies, document a clear technical trajectory: feature-engineered classifiers → deep learning → graph neural networks → transformer-based detection.", zh: "Mohawesh et al.(2021)回顧 250+ 篇研究,記錄了一條清晰的技術軌跡:特徵工程分類器 → 深度學習 → 圖神經網路 → 基於 Transformer 的偵測。" },
+      { type: "sentence", en: "Reported in-sample [[accuracy]] frequently exceed 90%.", zh: "所報告的樣本內準確率經常超過 90%。" },
+      { type: "sentence", en: "Salminen et al. (2025) and Huang et al. (2025) extend this to LLM-generated review detection with comparable performance.", zh: "Salminen et al.(2025)與 Huang et al.(2025)更把此延伸至「LLM 生成式評論」的偵測,績效相當。" },
+      { type: "callout", title: "三個結構性限制 Three Structural Limitations", body: "**1. 事後導向(Post-hoc orientation)**:偵測發生在消費者已經接觸之「後」,期望污染早已成形。<br><br>**2. 對抗式脆弱性(Adversarial brittleness)**:當 LLM 生成能力提升,假評的語言可區辨度會收窄,尤其是當生成器被明確訓練去規避已知偵測模式時(Huang et al., 2025)。<br><br>**3. 消費者端缺口(Consumer-side null)**:既有工具測量的是「感知服務品質」(SERVQUAL 家族)或「消費者懷疑」(skepticism scales),但「沒有任何工具」是測量「接觸前資訊的真實性」於消費者感知層面的——這正是我們 EAQUAL-15 所要填補的缺口。" },
+
+      { type: "h3", en: "2.5 Research Gap Synthesis", zh: "2.5 研究缺口綜合" },
+      { type: "sentence", en: "[[Synthesizing]] across §2.1–§2.4, the research gap can be precisely articulated:", zh: "綜合 §2.1–§2.4,研究缺口可以被精確表述如下:" },
+      { type: "sentence", en: "Existing service quality theory (PZB) does not architecturally accommodate third-party-originated pre-encounter information pollution; existing signaling theory (Spence) and market failure theory (Akerlof) provide the structural diagnosis but no consumer-side measurement [[instrument]]; existing FRD research provides technical detection but cannot reverse the expectation pollution that occurs prior to detection.", zh: "既有的服務品質理論(PZB)在架構上沒有容納「第三方源頭的接觸前資訊污染」;既有的信號理論(Spence)與市場失靈理論(Akerlof)提供了結構性診斷,但「沒有」消費者端的測量工具;既有的 FRD 研究提供了技術性偵測,但「無法」逆轉那些在偵測之「前」就已發生的期望污染。" },
+      { type: "sentence", en: "**A theoretically grounded, consumer-side, pre-encounter authenticity measurement instrument with platform-side intervention coupling is therefore required.**", zh: "**因此,我們需要一個立基於理論、聚焦消費者端、衡量接觸前真實性、且耦合平台端介入機制的測量工具。**" },
+      { type: "sentence", en: "This study addresses this gap.", zh: "本研究即在處理此一缺口。" }
+    ]
+  },
+
+  methods: {
+    label: "Section V",
+    title: "Methodology",
+    roman: "研究方法",
+    content: [
+      { type: "h3", en: "4.1 Research Design Overview", zh: "4.1 研究設計總覽" },
+      { type: "sentence", en: "We propose a three-[[phase]] [[mixed-methods]] design.", zh: "本研究提出一個三階段的混合方法設計。" },
+      { type: "table", headers:["Phase 階段","Method 方法","Sample 樣本","Purpose 目的"], rows:[
+        ["Phase 1","Three-LLM ensemble + 真實語料校驗","1,440 生成題目 → 800 驗證;1,000 則真實 Google 評論","建構 MACS 語意題庫"],
+        ["Phase 2","橫斷面消費者問卷","N = 800 台灣消費者(年齡 × 評論閱讀頻率分層)","驗證 EAQUAL-15 之心理計量性質(H1a-c)"],
+        ["Phase 3","受試者間實驗","N = 240(3 × 2 混合因子)","檢驗 MACS 效能與 ELM 調節(H2a-c)"]
+      ] },
+
+      { type: "h3", en: "4.2 Phase 1: MACS Semantic Database Construction", zh: "4.2 第一階段:MACS 語意資料庫建構" },
+      { type: "sentence", en: "This phase implements the protocol detailed in our companion document (黄國津, 2026d, *MACS 語意題庫建構執行手冊 v1*).", zh: "此階段執行的是我們配套文件(黄國津, 2026d,《MACS 語意題庫建構執行手冊 v1》)中所詳述的協議。" },
+
+      { type: "h4", en: "Step 1 (Seed expansion)", zh: "步驟一:種子擴充" },
+      { type: "sentence", en: "A standardized prompt template is [[deployed]] across three frontier LLMs (Claude Sonnet 4.5, GPT-4o, Gemini 2.0 Flash) for each of 16 MOT subcategories (CA: 7, SC: 4, EC: 5).", zh: "我們在三家前沿 LLM(Claude Sonnet 4.5、GPT-4o、Gemini 2.0 Flash)上,針對 16 個 MOT 次類別(CA:7、SC:4、EC:5),施行一份標準化的提示詞模板。" },
+      { type: "sentence", en: "Each LLM generates 30 [[candidate]] items per subcategory, yielding 1,440 [[raw]] items.", zh: "每個 LLM 在每個次類別生成 30 則候選題目,共產出 1,440 則原始題目。" },
+      { type: "sentence", en: "All items are stored in a Notion database with full [[provenance]] (source LLM, generation timestamp, prompt version).", zh: "所有題目儲存於 Notion 資料庫,附上完整來源歷程(來源 LLM、生成時間戳、提示詞版本)。" },
+
+      { type: "h4", en: "Step 2 (Three-LLM voting)", zh: "步驟二:三 LLM 投票" },
+      { type: "sentence", en: "Each [[raw]] item is [[scored]] by all three LLMs on five dimensions (D1 [[construct]] [[purity]], D2 [[concreteness]], D3 [[measurability]], D4 [[fluency]], D5 [[discriminability]]; 1-5 scale each).", zh: "每則原始題目由三家 LLM 在五個維度上評分(D1 構念純度、D2 具體度、D3 可測量性、D4 流暢度、D5 區辨度;每項 1-5 分)。" },
+      { type: "sentence", en: "Items with mean score ≥ 4.0 and [[variance]] ≤ 0.5 are [[retained]] as Keep; items with mean < 3.0 are Drop; [[remainder]] enter Manual_Review.", zh: "平均分 ≥ 4.0 且變異數 ≤ 0.5 者列為「保留」(Keep);平均分 < 3.0 者列為「刪除」(Drop);其餘進入「人工複審」(Manual_Review)。" },
+
+      { type: "h4", en: "Step 3 (De-duplication)", zh: "步驟三:去重" },
+      { type: "sentence", en: "OpenAI text-[[embedding]]-3-small is used to compute pairwise [[cosine]] [[similarities]]; pairs with similarity > 0.92 are [[de-duplication]] retaining the higher-mean-score item.", zh: "我們使用 OpenAI text-embedding-3-small 計算兩兩之間的餘弦相似度;相似度 > 0.92 的配對予以去重,保留平均分較高者。" },
+      { type: "sentence", en: "[[Borderline]] pairs (0.85 < sim ≤ 0.92) enter manual review.", zh: "邊界配對(0.85 < 相似度 ≤ 0.92)進入人工複審。" },
+
+      { type: "h4", en: "Step 4 (Real corpus validation)", zh: "步驟四:真實語料校驗" },
+      { type: "sentence", en: "1,000 Google Maps restaurant reviews are [[stratified-sampled]] across restaurant type (4 categories) × rating (3 tiers) × length (3 tiers).", zh: "1,000 則 Google Maps 餐廳評論依「餐廳類型(4 類)× 星等(3 階)× 長度(3 階)」進行分層抽樣。" },
+      { type: "sentence", en: "Each LLM independently [[extracts]] MOT-detail mentions and [[matches]] them to candidate items.", zh: "每家 LLM 獨立提取 MOT 細節提及,並與候選題目進行配對。" },
+      { type: "sentence", en: "[[Coverage]] rates < 65% would [[trigger]] return to Step 1; we predict coverage will fall in the 70–80% range based on pilot observations.", zh: "覆蓋率 < 65% 將觸發回到步驟一;依先導觀察,我們預測覆蓋率落在 70–80% 區間。" },
+
+      { type: "h4", en: "Step 5 (Weight calibration)", zh: "步驟五:權重校準" },
+      { type: "formula", formula: "w<sub>i</sub> = α · w<sub>i</sub><sup>freq</sup> + (1−α) · w<sub>i</sub><sup>consensus</sup>,&nbsp;&nbsp;α = 0.6", caption: "MACS 真實性權重之計算公式" },
+      { type: "sentence", en: "Three-color [[thresholds]] (Red < 0.8, Yellow 0.8–1.5, Green ≥ 1.5) are [[anchored]] to Local Guide ≥ Level 7 reviewers as proxy for \"known authentic\" subset, using P10 and P50 of MACS scores in this sub-sample.", zh: "三色門檻(紅 < 0.8、黃 0.8–1.5、綠 ≥ 1.5)以 Local Guide Level ≥ 7 的評論者為「已知真實」子集之代理,並以該子樣本之 MACS 分數的 P10 與 P50 為錨點。" },
+      { type: "callout", title: "預先註冊的停損點 Pre-registered Halt Point", body: "若步驟四的覆蓋率落於 65% 以下,本協議將「停止」並要求修訂;修訂內容將在重新執行前透明地記錄下來。" },
+
+      { type: "h3", en: "4.3 Phase 2: EAQUAL-15 Scale Validation", zh: "4.3 第二階段:EAQUAL-15 量表驗證" },
+
+      { type: "h4", en: "4.3.1 Sampling", zh: "4.3.1 抽樣" },
+      { type: "sentence", en: "**Target sample**: N = 800 Taiwan consumers aged 20–65, [[stratified]] by age (20-34 / 35-49 / 50-65 = 1:1:1) and restaurant review-reading frequency (frequent / occasional / rare = 1:1:1).", zh: "**目標樣本**:800 位年齡 20–65 歲的台灣消費者,依「年齡(20-34 / 35-49 / 50-65 = 1:1:1)」與「評論閱讀頻率(常閱讀 / 偶爾 / 鮮少 = 1:1:1)」分層。" },
+      { type: "sentence", en: "Recruited via partner academic research platforms with monetary [[incentive]] (NTD 100 per participant, [[ethics-approved]]).", zh: "透過合作的學術研究平台招募,提供金錢誘因(每位 100 元新台幣,經倫理審查通過)。" },
+      { type: "sentence", en: "**Power analysis**: For a [[confirmatory]] [[factor]] analysis with 15 items and 3-factor structure, Wolf et al. (2013) recommend minimum N = 200 for adequate factor [[recovery]]; for predictive validity tests at expected β = 0.40, power analysis (G*Power 3.1, [[two-tailed]], α = 0.05, 95% power) requires N = 64 minimum.", zh: "**統計檢定力分析**:對於 15 題、三因素結構的驗證性因素分析,Wolf et al.(2013)建議最低 N = 200 才能達到充分的因素還原;對於預期 β = 0.40 的預測效度檢驗,G*Power 3.1(雙尾,α = 0.05,檢定力 95%)要求最低 N = 64。" },
+      { type: "sentence", en: "Our N = 800 substantially [[exceeds]] these requirements, providing power for [[subgroup]] analyses.", zh: "我們的 N = 800 大幅超過這些要求,並為子群體分析保留了足夠的檢定力。" },
+
+      { type: "h4", en: "4.3.2 Procedure", zh: "4.3.2 程序" },
+      { type: "sentence", en: "Participants are presented with a series of 8 [[stimulus]] reviews (mix of laboratory-validated authentic and AI-generated fake reviews, [[balanced]] 4:4 [[within-subject]]) and rate each on the EAQUAL-15 [[instrument]].", zh: "受試者會看到一組 8 則刺激評論(實驗室驗證的真評與 AI 生成的假評之混合,受試者內以 4:4 平衡),並用 EAQUAL-15 對每則評論評分。" },
+      { type: "sentence", en: "Order is [[randomized]]. [[Embedded]] validity-check items detect [[satisficing]].", zh: "順序隨機化。內嵌的效度檢查題用來偵測「滿意化作答」。" },
+
+      { type: "h4", en: "4.3.3 Analysis Plan", zh: "4.3.3 分析計畫" },
+      { type: "sentence", en: "**Item analysis**: Item-total correlations, [[redundancy]] detection, distribution checks.", zh: "**題目分析**:題目-總分相關、冗餘度偵測、分配檢查。" },
+      { type: "sentence", en: "**EFA on first half (N=400)**: Maximum likelihood [[extraction]] with promax [[rotation]]; expected three-factor structure with ≥ 60% [[variance]] explained.", zh: "**前半樣本(N=400)的探索性因素分析**:最大概似萃取搭配 promax 轉軸;預期三因素結構解釋變異量 ≥ 60%。" },
+      { type: "sentence", en: "**CFA on second half (N=400)**: [[Confirmatory]] three-factor model; fit [[thresholds]] CFI ≥ 0.95, RMSEA ≤ 0.06, SRMR ≤ 0.08.", zh: "**後半樣本(N=400)的驗證性因素分析**:驗證三因素模型;配適度門檻 CFI ≥ 0.95、RMSEA ≤ 0.06、SRMR ≤ 0.08。" },
+      { type: "sentence", en: "**Reliability**: Cronbach's α and McDonald's ω for each [[construct]]; expected α ≥ 0.80.", zh: "**信度**:每個構念計算 Cronbach's α 與 McDonald's ω;預期 α ≥ 0.80。" },
+      { type: "sentence", en: "**[[Convergent]] / [[discriminant]] validity** (H1a, H1b): Average Variance Extracted (AVE) > 0.50; AVE > squared inter-construct correlations.", zh: "**收斂效度與區辨效度**(H1a、H1b):平均萃取變異量(AVE)> 0.50;AVE > 構念間相關係數的平方。" },
+      { type: "sentence", en: "**[[Predictive]] validity** (H1c): [[Hierarchical]] regression entering [[controls]] (review length, valence, [[demographics]]) at Step 1 and EAQUAL at Step 2; report ΔR² and standardized β.", zh: "**預測效度**(H1c):階層迴歸,第 1 步放入控制變項(評論長度、情緒方向、人口統計),第 2 步放入 EAQUAL;報告 ΔR² 與標準化 β。" },
+
+      { type: "h3", en: "4.4 Phase 3: MACS Effectiveness Experiment", zh: "4.4 第三階段:MACS 效能實驗" },
+
+      { type: "h4", en: "4.4.1 Design", zh: "4.4.1 設計" },
+      { type: "sentence", en: "A 3 × 2 mixed [[factorial]] design: **MACS condition** (Green / Yellow / Red display, [[between-subjects]]) × **Product [[involvement]]** (high / low, [[manipulated]] within-subject via product category randomization).", zh: "3 × 2 混合因子設計:**MACS 條件**(綠/黃/紅顯示,受試者間)× **產品涉入度**(高/低,透過產品類別隨機化於受試者內操弄)。" },
+      { type: "sentence", en: "Dependent variables: trust [[calibration]] accuracy (continuous), purchase intention (Likert), and an in-task choice task ([[binary]]).", zh: "依變項:信任校準準確度(連續)、購買意圖(李克特量表)、以及一個任務內的選擇題([[binary]])。" },
+
+      { type: "h4", en: "4.4.2 Sampling", zh: "4.4.2 抽樣" },
+      { type: "sentence", en: "**N = 240** (40 participants per condition × 3 conditions × 2 involvement orderings).", zh: "**N = 240**(每條件 40 位 × 3 條件 × 2 種涉入度排序)。" },
+      { type: "sentence", en: "Power analysis (G*Power, F-test, between groups, η² = 0.06, α = 0.05, power = 0.80) requires n = 28 per condition; we aim for n = 40 to provide margin for attrition and [[subgroup]] analyses.", zh: "統計檢定力分析(G*Power,F 檢定,組間,η² = 0.06,α = 0.05,檢定力 = 0.80)要求每條件 n = 28;我們設定 n = 40,以保留樣本流失與子群體分析的緩衝。" },
+
+      { type: "h4", en: "4.4.3 Procedure", zh: "4.4.3 程序" },
+      { type: "sentence", en: "Participants encounter 6 [[simulated]] restaurant choice [[scenarios]] (3 high-involvement: dating-night [[fine]] dining; 3 low-involvement: quick weekday lunch).", zh: "受試者會遇到 6 個模擬餐廳選擇情境(3 個高涉入:約會夜的高級餐飲;3 個低涉入:平日午餐快食)。" },
+      { type: "sentence", en: "Each scenario presents 4 review excerpts; in MACS-active conditions, each review carries its tier color.", zh: "每個情境呈現 4 則評論摘錄;在 MACS 啟動條件下,每則評論帶有其階別顏色。" },
+      { type: "sentence", en: "Participants rate each review's perceived authenticity, then make a [[binary]] [[patronage]] decision.", zh: "受試者對每則評論的感知真實性評分,然後做出二元的「光顧/不光顧」決策。" },
+      { type: "sentence", en: "Post-task, [[ground-truth]] fake/real labels are [[revealed]] and trust calibration accuracy is [[computed]] as 1 − |perceived − actual|.", zh: "任務後,真值的「假/真」標籤被揭露,並計算信任校準準確度為 1 − |感知 − 實際|。" },
+
+      { type: "h4", en: "4.4.4 Analysis Plan", zh: "4.4.4 分析計畫" },
+      { type: "sentence", en: "**H2a**: Mixed-effects [[logistic]] regression predicting actual-fake-status from MACS tier; report [[odds]] ratio.", zh: "**H2a**:以 MACS 階別預測實際假/真狀態的混合效應邏輯迴歸;報告勝算比。" },
+      { type: "sentence", en: "**H2b**: Mixed-effects regression predicting trust calibration accuracy; report Cohen's d.", zh: "**H2b**:預測信任校準準確度的混合效應迴歸;報告 Cohen's d。" },
+      { type: "sentence", en: "**H2c (ELM moderation)**: Add involvement × MACS-tier [[interaction]]; report ΔR² and simple-effects [[decomposition]].", zh: "**H2c(ELM 調節)**:加入「涉入度 × MACS 階別」交互作用項;報告 ΔR² 與簡單效應分解。" },
+
+      { type: "h3", en: "4.5 Pre-Registration Statement and Deviations Protocol", zh: "4.5 預先註冊聲明與偏離處理協議" },
+      { type: "sentence", en: "This protocol will be [[filed]] at **Open Science Framework** before Phase 1 commencement.", zh: "本協議將在第一階段開始之前提交至「開放科學框架(OSF)」。" },
+      { type: "sentence", en: "Any [[deviation]] between this pre-registered design and eventual implementation (e.g., sample [[shortfall]], [[instrument]] [[modification]], additional [[subgroup]] analyses) will be transparently disclosed in supplementary materials per Nosek et al. (2018) standards.", zh: "本預先註冊設計與最終執行之間的任何偏離(例如:樣本不足、工具修改、額外子群體分析),將依 Nosek et al.(2018)的標準在補充資料中透明揭露。" }
+    ]
+  },
+
+  results: {
+    label: "Section VI",
+    title: "Expected Results",
+    roman: "預期結果",
+    content: [
+      { type: "callout", title: "重要說明 Important Note", body: "本節呈現的是「預期」結果——根據先行文獻與理論推理推導而出。在預先註冊時尚未蒐集任何資料。所有的數值預測都是明示的,並將依預先註冊標準對照實際資料進行評估。" },
+
+      { type: "h3", en: "5.1 Phase 1 Expected Outcomes", zh: "5.1 第一階段預期結果" },
+      { type: "sentence", en: "**Item generation**: 1,440 [[raw]] items (16 categories × 3 LLMs × 30 items), with ≥ 95% successful JSON parsing.", zh: "**題目生成**:1,440 則原始題目(16 類 × 3 家 LLM × 30 題),JSON 解析成功率 ≥ 95%。" },
+      { type: "sentence", en: "**Voting/de-duplication retention**: ~720–820 items [[retained]] after Phase 2 voting and Phase 3 de-duplication, consistent with typical psychometric scale-construction attrition rates (Hinkin, 1998).", zh: "**投票/去重後保留量**:經第二階段投票與第三階段去重後保留約 720–820 題,與典型量表建構的題目流失率一致(Hinkin, 1998)。" },
+      { type: "sentence", en: "**Real corpus coverage**: 70–80% [[coverage]] rate of MACS items in real reviews.", zh: "**真實語料覆蓋率**:MACS 題目在真實評論中的覆蓋率為 70–80%。" },
+      { type: "sentence", en: "We [[anticipate]] **Source Credibility (SC) items will show lower coverage** (40–55%) than Content Authenticity (CA) items (75–88%), because SC signals are typically inferred from review *metadata* rather than appearing in review *content*.", zh: "我們預期「SC(來源可信度)題目的覆蓋率將較低」(40–55%),低於 CA(內容真實性)題目(75–88%),因為 SC 訊號通常是從評論的「後設資料(metadata)」推論而來,而非出現在評論「內文」之中。" },
+      { type: "sentence", en: "**Cross-LLM disagreement**: [[Ensemble]] [[variance]] distribution will be [[right-skewed]], with ~70% of items showing low variance (high consensus) and ~15% in Manual_Review zone, consistent with Sclar et al. (2024) findings on cross-LLM stability.", zh: "**跨 LLM 不一致**:集成變異數的分配將呈右偏,約 70% 的題目呈現低變異數(高共識),約 15% 落於人工複審區,與 Sclar et al.(2024)關於跨 LLM 穩定性的發現一致。" },
+
+      { type: "h3", en: "5.2 Phase 2 Expected Psychometric Properties", zh: "5.2 第二階段預期心理計量性質" },
+
+      { type: "h4", en: "5.2.1 EFA / CFA", zh: "5.2.1 探索性與驗證性因素分析" },
+      { type: "sentence", en: "We expect a **clean three-factor structure** with primary [[loadings]] ≥ 0.65 and minimal [[cross-loadings]] (≤ 0.30).", zh: "我們預期會得到「乾淨的三因素結構」,主要負荷量 ≥ 0.65,交叉負荷量極小(≤ 0.30)。" },
+      { type: "sentence", en: "CFA fit [[indices]] anticipated:", zh: "預期 CFA 配適度指數:" },
+      { type: "table", headers:["Index 指數","Expected 預期","Acceptance Threshold 接受門檻"], rows:[
+        ["CFI","0.95–0.98","≥ 0.95"],
+        ["RMSEA","0.04–0.06","≤ 0.06"],
+        ["SRMR","0.04–0.06","≤ 0.08"],
+        ["χ²/df","1.8–2.5","≤ 3.0"]
+      ] },
+
+      { type: "h4", en: "5.2.2 Reliability", zh: "5.2.2 信度" },
+      { type: "table", headers:["Construct 構念","Expected α","Expected ω"], rows:[
+        ["SC(4 題)","0.78–0.85","0.80–0.86"],
+        ["CA(6 題)","0.85–0.91","0.86–0.92"],
+        ["EC(5 題)","0.81–0.88","0.82–0.89"],
+        ["EAQUAL Total(15 題)","0.88–0.93","0.89–0.94"]
+      ] },
+
+      { type: "h4", en: "5.2.3 H1a (Convergent Validity)", zh: "5.2.3 H1a(收斂效度)" },
+      { type: "sentence", en: "Expected inter-construct correlations: r(SC, CA) ≈ 0.55–0.65; r(CA, EC) ≈ 0.50–0.62; r(SC, EC) ≈ 0.45–0.55.", zh: "預期構念間相關:r(SC, CA) ≈ 0.55–0.65;r(CA, EC) ≈ 0.50–0.62;r(SC, EC) ≈ 0.45–0.55。" },
+      { type: "sentence", en: "AVE for each [[construct]] expected ≥ 0.55.", zh: "每個構念的 AVE 預期 ≥ 0.55。" },
+
+      { type: "h4", en: "5.2.4 H1b (Discriminant Validity from SERVQUAL)", zh: "5.2.4 H1b(與 SERVQUAL 之區辨效度)" },
+      { type: "sentence", en: "We predict EAQUAL × SERVQUAL Gap 5 correlation r ≈ 0.30–0.45 (shared variance 9–20%, well below the 40% threshold).", zh: "我們預測 EAQUAL × SERVQUAL Gap 5 之相關 r ≈ 0.30–0.45(共享變異 9–20%,遠低於 40% 門檻)。" },
+      { type: "sentence", en: "EC will show highest correlation (r ≈ 0.45) and SC the lowest (r ≈ 0.20–0.30), consistent with EC's pre-encounter / post-encounter bridging role and SC's pre-encounter purity.", zh: "EC 會呈現最高相關(r ≈ 0.45),SC 最低(r ≈ 0.20–0.30),這與 EC 在「接觸前/接觸後」的橋接角色,以及 SC 的「接觸前純度」相符。" },
+
+      { type: "h4", en: "5.2.5 H1c (Predictive Validity)", zh: "5.2.5 H1c(預測效度)" },
+      { type: "sentence", en: "[[Hierarchical]] [[regression]] expected to [[yield]] β(EAQUAL → trust) in the range 0.42–0.55 (p < .001) after [[controls]]; β(EAQUAL → purchase intention) in the range 0.28–0.38.", zh: "階層迴歸預期會產出:控制變項放入後,β(EAQUAL → 信任)落於 0.42–0.55 區間(p < .001);β(EAQUAL → 購買意圖)落於 0.28–0.38 區間。" },
+      { type: "sentence", en: "ΔR² expected ≥ 0.10 for trust and ≥ 0.06 for purchase intention.", zh: "ΔR² 預期信任 ≥ 0.10,購買意圖 ≥ 0.06。" },
+
+      { type: "h3", en: "5.3 Phase 3 Expected Experimental Effects", zh: "5.3 第三階段預期實驗效應" },
+
+      { type: "h4", en: "5.3.1 H2a (MACS Discrimination)", zh: "5.3.1 H2a(MACS 區辨效能)" },
+      { type: "sentence", en: "[[Logistic]] [[regression]] predicting fake/real status from MACS tier: expected [[odds]] ratio Red-vs-Green ≈ 4.0–6.0 (95% CI excludes 1.0). Yellow-vs-Green expected OR ≈ 1.8–2.5.", zh: "以 MACS 階別預測真/假狀態的邏輯迴歸:預期勝算比「紅 vs. 綠」≈ 4.0–6.0(95% 信賴區間不包含 1.0);「黃 vs. 綠」預期 OR ≈ 1.8–2.5。" },
+      { type: "sentence", en: "[[Sensitivity]], [[specificity]], AUC for a Red-flag threshold expected at sensitivity 0.72–0.80 and specificity 0.78–0.85, [[yields]] AUC ≈ 0.81–0.87.", zh: "紅階門檻的敏感度與特異度,預期敏感度 0.72–0.80、特異度 0.78–0.85,得到 AUC ≈ 0.81–0.87。" },
+
+      { type: "h4", en: "5.3.2 H2b (Trust Calibration)", zh: "5.3.2 H2b(信任校準)" },
+      { type: "sentence", en: "Cohen's d for trust-calibration accuracy improvement under MACS-active vs. control conditions expected in the range **d = 0.45–0.65**.", zh: "MACS 啟動 vs. 控制條件下信任校準準確度提升的 Cohen's d,預期落於 **d = 0.45–0.65** 區間。" },
+      { type: "sentence", en: "This range derives from prior consumer-warning interventions (Wogalter et al., 2002; Kim & Lennon, 2013) reporting d = 0.40–0.70 for analogous interventions.", zh: "此區間源自先前的消費者警示介入研究(Wogalter et al., 2002; Kim & Lennon, 2013),類似介入報告 d = 0.40–0.70。" },
+
+      { type: "h4", en: "5.3.3 H2c (ELM Moderation)", zh: "5.3.3 H2c(ELM 調節)" },
+      { type: "sentence", en: "[[Interaction]] effect (MACS-tier × Involvement) expected ΔR² = 0.06–0.10.", zh: "「MACS 階別 × 涉入度」交互作用的預期 ΔR² = 0.06–0.10。" },
+      { type: "sentence", en: "Simple-effects [[decomposition]] expected to show:", zh: "簡單效應分解預期呈現:" },
+      { type: "callout", title: "ELM 雙路徑模式 ELM Dual-Pathway Pattern", body: "<strong>高涉入度</strong>:MACS 效應 d ≈ 0.55–0.80(強)<br><strong>低涉入度</strong>:MACS 效應 d ≈ 0.10–0.25(微弱 / 不顯著)" },
+      { type: "sentence", en: "This [[pattern]] would [[replicate]] the **[[central]] vs. [[peripheral]] processing** distinction (Petty & Cacioppo, 1986) and confirm the ELM dual-condition [[boundary]] explicitly delineated in §3.5.", zh: "此一模式將重現「中央路徑 vs. 周邊路徑」處理的區分(Petty & Cacioppo, 1986),並確認 §3.5 所明確標示的 ELM 雙條件邊界。" },
+
+      { type: "h3", en: "5.4 Robustness and Sensitivity Anticipations", zh: "5.4 穩健性與敏感性預期" },
+      { type: "sentence", en: "We pre-specify several [[robustness]] checks:", zh: "我們預先明訂以下幾項穩健性檢驗:" },
+      { type: "sentence", en: "**Cross-platform [[replicability]]**: Phase 1 protocol will be re-executed for Tripadvisor reviews (n = 200 sub-sample) to test cross-platform [[generalizability]] of MOT-category coverage.", zh: "**跨平台可重現性**:第一階段協議將針對 Tripadvisor 評論(n = 200 子樣本)重新執行,以檢驗 MOT 類別覆蓋的跨平台可推廣性。" },
+      { type: "sentence", en: "**[[Adversarial]] generation test**: Phase 3 will include an [[embedded]] sub-sample of reviews generated by GPT-4 explicitly prompted to [[evade]] MOT-specificity heuristics; we anticipate MACS [[sensitivity]] will [[degrade]] by 15–25% on this adversarial sub-sample.", zh: "**對抗性生成檢驗**:第三階段將內嵌一個由 GPT-4 明確被指示「規避 MOT 具體度啟發法」所生成的評論子樣本;我們預期 MACS 敏感度在此對抗子樣本上會下降 15–25%。" },
+      { type: "sentence", en: "**Demographic moderation**: Age and education are [[exploratorily]] examined as potential moderators of EAQUAL effectiveness; no specific predictions are pre-registered for these.", zh: "**人口統計調節**:年齡與教育將以探索性方式檢驗為 EAQUAL 效能之潛在調節變項;這些並未預先註冊具體預測。" }
+    ]
+  },
+
+  discussion: {
+    label: "Section VII",
+    title: "Discussion (Anticipated)",
+    roman: "預期討論",
+    content: [
+      { type: "h3", en: "6.1 Theoretical Contributions", zh: "6.1 理論貢獻" },
+      { type: "sentence", en: "Should expected results be [[obtained]], this study would [[establish]] three theoretical [[contributions]] of [[cumulative]] significance.", zh: "若能取得預期結果,本研究將確立三項具累積意義的理論貢獻。" },
+      { type: "sentence", en: "**First**, by formally distinguishing Gap D from PZB Gap 4 along three independent theoretical dimensions ([[accountability]], signal credibility, market failure), we would move service quality theory beyond its 1980s-era assumption that external communications [[originate]] from accountable provider sources.", zh: "**第一**,藉由沿三個獨立理論維度(問責性、信號可信度、市場失靈)正式區分 Gap D 與 PZB Gap 4,我們將推動服務品質理論超越其 1980 年代的「外部溝通源自可問責業者」之假設。" },
+      { type: "sentence", en: "This matters because contemporary service ecosystems increasingly rely on third-party-generated information, and the PZB framework as currently used systematically [[conflate]]s two structurally different gaps. Our framework provides researchers with conceptual [[machinery]] to [[disentangle]] them.", zh: "這之所以重要,是因為當代服務生態系日益仰賴第三方產生的資訊,而 PZB 架構目前的使用方式系統性地把兩個結構上不同的缺口混為一談。我們的架構為研究者提供了釐清兩者的概念機制。" },
+      { type: "sentence", en: "**Second**, EAQUAL-15 would provide the first consumer-side three-dimensional measurement [[instrument]] explicitly targeting expectation-authenticity rather than perceived service quality.", zh: "**第二**,EAQUAL-15 將提供第一個明確以「期望真實性」(而非「感知服務品質」)為標的之消費者端三維測量工具。" },
+      { type: "sentence", en: "This [[address]]es the measurement gap identified in §2.4 and complements (rather than replaces) SERVQUAL by measuring a theoretically prior [[construct]] in the consumer information-processing chain.", zh: "這處理了 §2.4 所指認的測量缺口,並透過測量「消費者資訊處理鏈中理論上更前端」的構念,對 SERVQUAL 形成「補充」(而非取代)。" },
+      { type: "sentence", en: "**Third**, by responding to Akerlof's (1970) original call for **dual-end intervention** with a concrete operational architecture (EAQUAL ↔ MACS), this study moves market failure theory from [[diagnostic]] mode toward [[intervention]] design.", zh: "**第三**,藉由以一個具體可操作的架構(EAQUAL ↔ MACS)回應 Akerlof(1970)對「雙端介入」的原始呼籲,本研究把市場失靈理論從「診斷模式」推向「介入設計」。" },
+      { type: "sentence", en: "The EHM principle articulates a [[coherent]] conceptual framework for digital service [[platforms]], [[regulators]], and researchers attempting to address review [[manipulation]] as a systemic rather than individual-level problem.", zh: "EHM 原則為數位服務平台、監管機關、以及試圖把評論操弄視為「系統性而非個人層級」問題來處理的研究者,提出了一個條理一致的概念架構。" },
+
+      { type: "h3", en: "6.2 Practical Implications", zh: "6.2 實務意涵" },
+      { type: "sentence", en: "**For platforms**: The MACS architecture provides a [[deployable]] design pattern that does not require eliminating open-text reviews but [[supplements]] them with [[structured]] authenticity signals.", zh: "**對平台而言**:MACS 架構提供一個可部署的設計型態,不要求平台廢除開放式文字評論,而是以結構化的真實性訊號予以補充。" },
+      { type: "sentence", en: "Platforms adopting MACS would generate new data layers usable for both consumer benefit and internal trust-and-safety operations.", zh: "採納 MACS 的平台會產生新的資料層,既可造福消費者,亦可用於內部信任與安全的運作。" },
+      { type: "sentence", en: "**For consumers**: EAQUAL provides a potential basis for educational interventions—e.g., public-service campaigns or platform [[onboarding]] modules training [[discernment]] of the three authenticity dimensions.", zh: "**對消費者而言**:EAQUAL 提供了教育介入的潛在基礎——例如公益宣導活動,或平台導入模組訓練使用者辨識三個真實性維度。" },
+      { type: "sentence", en: "**For honest providers**: The dual-track architecture creates a [[credible]] signaling pathway through which authentic establishments can be distinguished from manipulation-juiced competitors, addressing the lemon-market collapse pressure documented in §3.2.3.", zh: "**對誠實業者而言**:雙軌架構創造一條可信的信號路徑,讓真實的店家能與「靠操弄催化的競爭者」區分開來,處理 §3.2.3 所記錄的檸檬市場崩潰壓力。" },
+
+      { type: "h3", en: "6.3 Policy Contributions", zh: "6.3 政策貢獻" },
+      { type: "sentence", en: "The framework offers [[regulatory]] bodies (Taiwan FTC, EU DSA enforcement, US FTC post-2024-fake-review-rule) a theoretically grounded measurement and intervention [[vocabulary]].", zh: "本架構為監管機關(台灣公平會、歐盟 DSA 執法、美國 FTC 2024 假評禁令後)提供一套立基於理論的測量與介入語彙。" },
+      { type: "sentence", en: "**[[Mandated]] MACS-style disclosure layers** could be evaluated as a regulatory intervention [[complementary]] to fake-review prohibitions, addressing the prevention vs. detection-and-removal [[asymmetry]].", zh: "**「強制要求 MACS 式揭露層」**可被評估為一種與假評禁令互補的監管介入,處理「事前預防 vs. 事後偵測-移除」之間的不對稱性。" },
+      { type: "sentence", en: "**EAQUAL-based consumer surveys** could provide population-level [[monitoring]] of expectation-pollution levels, generating regulatory triggering metrics [[analogous]] to inflation indices in monetary policy.", zh: "**「以 EAQUAL 為本的消費者調查」**可提供母體層級的「期望污染水準」監測,產出類比於貨幣政策中通膨指數的「監管觸發指標」。" },
+
+      { type: "h3", en: "6.4 Three-Paper Trilogy Coherence", zh: "6.4 三部曲論文整合性" },
+      { type: "sentence", en: "This integrated manuscript [[synthesizes]] findings and arguments from a three-paper conference [[trilogy]] (黄國津, 2026a [北商大], 2026b [龍華], 2026c [北科大]).", zh: "本整合稿綜合了來自三場研討會論文之三部曲的研究發現與論證(黄國津, 2026a [北商大]、2026b [龍華]、2026c [北科大])。" },
+      { type: "sentence", en: "The trilogy's logical progression—**phenomenon documentation → theoretical independence argument → measurement instrument [[prototype]]**—provides cumulative [[scaffolding]] that this integrated paper [[formalizes]] for journal-level [[submission]].", zh: "此三部曲的邏輯進程——**現象記錄 → 理論獨立性論證 → 測量工具原型**——提供了累積性的鷹架,本整合稿則將其予以期刊投稿層級的形式化。" },
+      { type: "sentence", en: "Trilogy outputs include the original Gap D formulation (北商大), the three-dimensional theoretical defense (龍華), and the EAQUAL-15 prototype (北科大).", zh: "三部曲的成果包含:原始 Gap D 表述(北商大)、三維理論辯護(龍華),以及 EAQUAL-15 原型(北科大)。" },
+      { type: "sentence", en: "The current paper [[extend]]s these by (1) integrating the three theoretical pillars into a unified hypothesis structure, (2) developing the MACS platform-side counterpart, and (3) specifying a comprehensive empirical validation protocol.", zh: "本稿在此基礎上進一步:(1)把三大理論支柱整合為統一的假設結構;(2)發展 MACS 之平台端對應機制;(3)明訂完整的實證驗證協議。" }
+    ]
+  },
+
+  limitations: {
+    label: "Section VIII",
+    title: "Limitations and Future Research",
+    roman: "限制與未來研究",
+    content: [
+      { type: "h3", en: "7.1 Pre-Specified Limitations", zh: "7.1 預先聲明之研究限制" },
+      { type: "sentence", en: "**LLM training corpus [[overlap]]**: Three [[frontier]] LLMs share [[substantial]] training data (Common Crawl, web text); cross-LLM ensemble does not eliminate shared [[representational]] [[biases]].", zh: "**LLM 訓練語料的重疊**:三家前沿 LLM 共享大量訓練資料(Common Crawl、網路文本);跨 LLM 集成「並不能」消除共享的表徵性偏誤。" },
+      { type: "sentence", en: "The Phase 3 real-corpus validation step is the principal [[mitigation]].", zh: "第三階段的真實語料校驗步驟是主要的緩解措施。" },
+      { type: "sentence", en: "**Restaurant industry specificity**: Phase 1 protocol is [[calibrated]] for restaurant reviews; cross-industry [[generalizability]] (hotels, healthcare, e-commerce) requires [[industry-specific]] re-execution of Phase 1.", zh: "**餐廳產業特定性**:第一階段協議是針對餐廳評論校準;跨產業的可推廣性(旅館、醫療、電商)需要針對該產業重新執行第一階段。" },
+      { type: "sentence", en: "**Mandarin-Chinese language specificity**: While EAQUAL items have English [[parallel]] translations, the construct validity has been pre-registered for Taiwan Mandarin-speaking samples; cross-cultural / cross-[[linguistic]] validation is [[reserved]] for future work.", zh: "**中文語言特定性**:雖然 EAQUAL 題目有英文對照翻譯,但構念效度已預先註冊為「台灣華語樣本」;跨文化/跨語言的驗證留待未來研究。" },
+      { type: "sentence", en: "**Adversarial [[brittleness]]**: As LLM generators become more [[sophisticated]], the linguistic [[distinguishability]] foundation of MACS will degrade.", zh: "**對抗式脆弱性**:當 LLM 生成器變得更精密,MACS 立基的語言可區辨性將會劣化。" },
+      { type: "sentence", en: "The framework should be [[conceptualized]] as **one layer in a [[defense-in-depth]] architecture** rather than a [[standalone]] solution.", zh: "本架構應被概念化為「縱深防禦架構中的一層」,而非一個獨立的解決方案。" },
+      { type: "sentence", en: "**MACS three-color threshold reliance on Local Guide proxy**: Anchoring \"known authentic\" to high-level Google Local Guides is a convenient but imperfect proxy; future work should validate against more [[rigorous]] authenticity ground-truth (e.g., reviews paired with experimentally [[verified]] consumer experiences).", zh: "**MACS 三色門檻依賴 Local Guide 代理**:把「已知真實」錨定於高階 Google Local Guides 是便利但不完美的代理;未來工作應對照更嚴謹的真實性真值予以驗證(例如:配合實驗驗證消費者體驗的評論)。" },
+      { type: "sentence", en: "**ELM moderation as [[boundary]], not validation**: H2c's ELM moderation is pre-registered as a boundary condition specification, not a primary validation target.", zh: "**ELM 調節作為邊界,而非驗證標的**:H2c 的 ELM 調節是被預先註冊為「邊界條件之指定」,而非主要驗證目標。" },
+      { type: "sentence", en: "Should the moderation effect not [[replicate]], the framework's claimed scope of applicability narrows but its core claims remain testable.", zh: "若調節效應未能重現,本架構所宣稱的「適用範圍」將縮窄,但其核心主張仍可被檢驗。" },
+      { type: "sentence", en: "**Single-author limitation**: The trilogy and current integration are single-authored; the lack of [[cross-researcher]] prompt and operationalization [[audits]] is [[acknowledged]] as a methodological limitation.", zh: "**單一作者的限制**:三部曲與本整合稿均為單一作者;缺乏跨研究者對提示詞與操作化的稽核,被承認為一項方法學限制。" },
+      { type: "sentence", en: "Phase 1 prompt design should ideally be subjected to expert review prior to execution; this is [[logged]] as a pre-execution [[checkpoint]].", zh: "第一階段的提示詞設計理想上應在執行前接受專家審查;此事被記錄為一個執行前檢查點。" },
+
+      { type: "h3", en: "7.2 Future Research Directions", zh: "7.2 未來研究方向" },
+      { type: "sentence", en: "**Longitudinal Gap D [[dynamics]]**: How does Gap D [[evolve]] over time as fake-review production technology improves and platform countermeasures deploy? A [[panel]] design tracking Gap D over 2-year windows would inform regulatory cycle planning.", zh: "**Gap D 的縱貫動態**:當假評製造技術進步、平台反制措施部署時,Gap D 會如何隨時間演進?以兩年為窗口、追蹤 Gap D 的縱貫設計,可為監管週期規劃提供參考。" },
+      { type: "sentence", en: "**Cross-cultural validation**: [[Comparative]] studies across high-trust (e.g., Northern European) and low-trust (e.g., post-collapse market) cultural [[settings]] would inform the cultural sensitivity of EAQUAL [[construct]]s.", zh: "**跨文化驗證**:針對高信任(如北歐)與低信任(如崩壞後市場)文化場域的比較性研究,將可提供 EAQUAL 構念的文化敏感性資訊。" },
+      { type: "sentence", en: "**Generative-AI countermeasure dynamics**: [[Game-theoretic]] modeling of the [[arms race]] between fake-review generators and MACS-style detectors could inform [[sustainable]] platform design.", zh: "**生成式 AI 反制動態**:對「假評生成器 vs. MACS 式偵測器」之間軍備競賽的賽局理論建模,可為可持續的平台設計提供啟發。" },
+      { type: "sentence", en: "**Provider-side [[adoption]] studies**: How do honest providers respond to MACS deployment? Do they [[shift]] behavior, or does a new [[equilibrium]] emerge?", zh: "**業者端採納研究**:誠實業者如何回應 MACS 的部署?他們會轉變行為,還是會浮現新的均衡?" },
+      { type: "sentence", en: "**Regulatory [[natural]] experiments**: Jurisdictional differences in fake-review enforcement (e.g., FTC 2024 rule vs. pre-rule periods) provide [[quasi-experimental]] opportunities for Gap D measurement.", zh: "**監管自然實驗**:司法管轄之間在假評執法上的差異(例如:美國 FTC 2024 規則 vs. 規則之前的時期)為 Gap D 的測量提供了準實驗機會。" }
+    ]
+  },
+
+  conclusion: {
+    label: "Section IX",
+    title: "Conclusion",
+    roman: "結論",
+    content: [
+      { type: "sentence", en: "We have [[argued]] that fake online reviews constitute not a marginal [[data-cleanliness]] problem but a [[systemic]] service quality theory gap requiring [[structured]] theoretical and methodological response.", zh: "我們主張:線上假評並非邊緣性的「資料清理問題」,而是一個需要結構化理論與方法回應的「系統性服務品質理論缺口」。" },
+      { type: "sentence", en: "**Gap D (Digital Information Pollution Gap)** is [[institutionally]] distinct from PZB Gap 4 along three theoretical dimensions—[[accountability]], signal credibility, and market failure mechanism.", zh: "**Gap D(數位資訊污染缺口)** 沿三個理論維度——問責性、信號可信度、市場失靈機制——與 PZB Gap 4 在制度上相區別。" },
+      { type: "sentence", en: "The proposed **EAQUAL-15** [[instrument]] and **MACS** platform-side complement together [[implement]]s a dual-track **Expectation Honesty Management** principle responding to Akerlof's (1970) original theoretical call for dual-end [[intervention]] in markets with information [[asymmetry]].", zh: "本研究提出的「EAQUAL-15」測量工具與「MACS」平台端互補機制,共同實作了一個雙軌的「期望誠實管理」原則,回應 Akerlof(1970)對於資訊不對稱市場「雙端介入」的原始理論呼籲。" },
+      { type: "sentence", en: "Six pre-registered hypotheses with [[explicit]] [[predicted]] [[effect sizes]] ranges will be tested via a three-phase [[mixed-methods]] design (LLM-based semantic database construction, N=800 consumer survey, N=240 experimental study).", zh: "六項預先註冊的假設(含明確的預期效應量區間)將透過三階段混合方法設計予以檢驗(以 LLM 為基礎之語意資料庫建構、N=800 消費者調查、N=240 實驗研究)。" },
+      { type: "sentence", en: "Successful [[execution]] would [[establish]] (a) Gap D as a [[contributable]] [[construct]] to the service quality literature, (b) EAQUAL as the first consumer-side authenticity measurement instrument, and (c) MACS as a deployable platform architecture pattern for fake-review-resistant review systems.", zh: "成功的執行將確立:(a) Gap D 作為對服務品質文獻可貢獻的構念;(b) EAQUAL 作為首個消費者端真實性測量工具;(c) MACS 作為「抗假評評論系統」的可部署平台架構型態。" },
+      { type: "sentence", en: "Limitations—particularly LLM training-corpus [[overlap]], restaurant industry [[calibration]], and [[adversarial]] generator dynamics—are explicitly [[pre-disclosed]].", zh: "限制——特別是 LLM 訓練語料的重疊、餐廳產業的校準、以及對抗性生成器的動態——均已明確預先揭露。" },
+      { type: "sentence", en: "The **Pre-Registered Report** format is [[essential]] here: it [[discipline]]s our theoretical claims to be [[falsifiable]] by data we have not yet seen, and protects readers from [[selective]] reporting.", zh: "「預先註冊報告」格式在此不可或缺:它約束我們的理論主張必須能被「尚未看見的資料」否證,並保護讀者免於選擇性報告。" },
+      { type: "sentence", en: "We [[invite]] peer [[scrutiny]] of the theoretical framework and methodological design *now*, prior to data collection, in accordance with [[emerging]] standards for [[credible]] service-research science.", zh: "我們邀請對本理論架構與方法設計的同儕審視於「現在」、即「資料蒐集之前」進行,以符合新興的「可信服務研究科學」標準。" }
+    ]
+  },
+
+  references: {
+    label: "Section X",
+    title: "References",
+    roman: "參考文獻",
+    content: [
+      { type: "callout", title: "閱讀說明 Note on Reading", body: "本節羅列論文主要引用文獻。學術閱讀練習中,參考文獻區段不需逐句翻譯,但可從中認識重要學者與經典文獻的出處格式(APA 7th)。本論文預計擴充至約 75 筆引用。" },
+      { type: "ref-list", items: [
+        "Akerlof, G. A. (1970). The market for \"lemons\": Quality uncertainty and the market mechanism. <em>Quarterly Journal of Economics</em>, 84(3), 488–500.",
+        "Bickart, B., & Schindler, R. M. (2001). Internet forums as influential sources of consumer information. <em>Journal of Interactive Marketing</em>, 15(3), 31–40.",
+        "Capital One Shopping Research. (2025). Online review statistics. Retrieved from https://capitaloneshopping.com/research/online-review-statistics/",
+        "Carlzon, J. (1987). <em>Moments of Truth</em>. Harper & Row.",
+        "Drucker, P. F. (1993). <em>Post-Capitalist Society</em>. Harper Business.",
+        "Friestad, M., & Wright, P. (1994). The persuasion knowledge model: How people cope with persuasion attempts. <em>Journal of Consumer Research</em>, 21(1), 1–31.",
+        "Hinkin, T. R. (1998). A brief tutorial on the development of measures for use in survey questionnaires. <em>Organizational Research Methods</em>, 1(1), 104–121.",
+        "Huang, Y., Zhou, J., Dong, W., Li, W., Chi, M., Jiang, C., Wang, W., & Deng, S. (2025). Decoding LLMs verbal deception in online reviews. <em>Decision Support Systems</em>, 200, 114529.",
+        "Kim, J., & Lennon, S. J. (2013). Effects of reputation and website quality on online consumers' emotion, perceived risk, and purchase intention. <em>Journal of Research in Interactive Marketing</em>, 7(1), 33–56.",
+        "Lecinski, J. (2011). <em>Winning the Zero Moment of Truth</em>. Google.",
+        "Meppelink, C. S., et al. (2025). Detecting AI-generated fake reviews: Linguistic signals and consumer responses. <em>Computers in Human Behavior</em>, 152, 108074.",
+        "Mohawesh, R., et al. (2021). Fake reviews detection: A survey. <em>IEEE Access</em>, 9, 65771–65802.",
+        "Nosek, B. A., Ebersole, C. R., DeHaven, A. C., & Mellor, D. T. (2018). The preregistration revolution. <em>Proceedings of the National Academy of Sciences</em>, 115(11), 2600–2606.",
+        "Parasuraman, A., Zeithaml, V. A., & Berry, L. L. (1985). A conceptual model of service quality and its implications for future research. <em>Journal of Marketing</em>, 49(4), 41–50.",
+        "Parasuraman, A., Zeithaml, V. A., & Berry, L. L. (1988). SERVQUAL: A multiple-item scale for measuring consumer perceptions of service quality. <em>Journal of Retailing</em>, 64(1), 12–40.",
+        "Petty, R. E., & Cacioppo, J. T. (1986). The Elaboration Likelihood Model of persuasion. <em>Advances in Experimental Social Psychology</em>, 19, 123–205.",
+        "PowerReviews. (2023). Survey of consumer review behaviors. Retrieved from https://powerreviews.com/research/",
+        "Salminen, J., Mustak, M., Jung, S.-G., Makkonen, M., & Jansen, B. J. (2025). Decoding deception in the online marketplace: Enhancing fake review detection with psycholinguistics and transformer models. <em>Journal of Marketing Analytics</em>, 13, 1–24.",
+        "Sclar, M., et al. (2024). Quantifying language models' sensitivity to spurious features in prompt design. <em>ICLR Proceedings</em>.",
+        "Spence, M. (1973). Job market signaling. <em>Quarterly Journal of Economics</em>, 87(3), 355–374.",
+        "Wolf, E. J., Harrington, K. M., Clark, S. L., & Miller, M. W. (2013). Sample size requirements for structural equation models: An evaluation of power, bias, and solution propriety. <em>Educational and Psychological Measurement</em>, 76(6), 913–934.",
+        "Zeithaml, V. A., Berry, L. L., & Parasuraman, A. (1993). The nature and determinants of customer expectations of service. <em>Journal of the Academy of Marketing Science</em>, 21(1), 1–12."
+      ] },
+      { type: "h3", en: "Trilogy References", zh: "三部曲引用" },
+      { type: "ref-list", items: [
+        "黄國津 (2026a). 數位假評的期望扭曲效應:基於 MOT 理論的服務品質缺口研究. 第二十五屆北商大學術論壇暨國際企業經營管理研討會論文集.",
+        "黄國津 (2026b). Gap D 作為 PZB 獨立缺口的三維論證:問責性、信號可信度與市場失靈. 龍華科技大學研討會論文集.",
+        "黄國津 (2026c). EAQUAL-15:期望真實性量表初步原型建構. 2026 經營管理國際研討會(北科大)論文集.",
+        "黄國津 (2026d). MACS 語意題庫建構執行手冊 v1. <em>Pre-registered protocol document</em>. (Companion to current manuscript.)"
+      ] }
+    ]
+  },
+
+  framework: {
+    label: "Section IV",
+    title: "Theoretical Framework",
+    roman: "理論架構",
+    content: [
+      { type: "h3", en: "3.1 Gap D: Definition and Mathematical Formulation", zh: "3.1 Gap D 的定義與數學表述" },
+      { type: "sentence", en: "We [[formally]] define **Gap D** as the [[discrepancy]] between consumers' [[polluted]] [[expectations]] (formed under fake-review-distorted information) and [[authentic]] expectations (formed under authentic-information-only conditions):", zh: "我們正式定義「Gap D」為:消費者「被污染的期望」(在被假評扭曲的資訊下所形成)與「真實期望」(在僅有真實資訊條件下所形成)之間的差距:" },
+      { type: "formula", formula: "Gap D = E<sub>polluted</sub> − E<sub>authentic</sub>", caption: "Gap D 的公式化定義" },
+      { type: "sentence", en: "Gap D possesses **directional [[polarity]]**:", zh: "Gap D 具有「方向性的極性」:" },
+      { type: "callout", title: "Gap D 的兩種方向 Two Polarities", body: "**Gap D > 0(正向假評/付費宣傳)**:期望被膨脹至高於真實的基準線之上;即使實際服務績效 P 屬正常,所感知到的缺口(P − E_polluted)仍會被拉大,造成在「沒有真實服務失誤」的情況下顧客仍感失望。<br><br>**Gap D < 0(負向假評/競爭對手攻擊)**:期望被壓低至真實基準線之下;消費者可能會迴避其本可正面評價的服務,或在被操弄條件下把「正常服務」感知為「超乎預期」。" },
+      { type: "sentence", en: "Integrating Gap D into the PZB framework yields the **[[modified]] Gap 5**:", zh: "把 Gap D 整合進 PZB 架構,即可得到「修訂版 Gap 5」:" },
+      { type: "formula", formula: "Gap 5<sub>modified</sub> = E<sub>authentic</sub> + Gap D − P", caption: "整合至 PZB 架構的修訂 Gap 5" },
+      { type: "sentence", en: "This formulation makes [[explicit]] that traditional Gap 5 measurements in the digital era *[[implicitly]]* contain Gap D as an unobserved [[confounder]].", zh: "此一表述明確點出:在數位時代下,傳統 Gap 5 的測量「隱含地」內含 Gap D 作為未被觀察到的混淆變項。" },
+      { type: "sentence", en: "Studies measuring \"perceived service quality\" without controlling for review exposure systematically [[conflate]] authentic expectation gaps with pollution-induced gaps.", zh: "凡測量「感知服務品質」而未控制「評論暴露」的研究,都會系統性地把「真實期望缺口」與「污染所致缺口」混為一談。" },
+
+      { type: "h3", en: "3.2 The Three-Dimensional Argument for Gap D's Theoretical Independence", zh: "3.2 Gap D 與 PZB Gap 4 的三維獨立性論證" },
+      { type: "sentence", en: "A potential [[challenger]] position holds that Gap D is merely a digital [[extension]] of PZB Gap 4 (external communications gap).", zh: "一個可能的挑戰立場主張:Gap D 只是 PZB Gap 4(外部溝通缺口)的數位延伸而已。" },
+      { type: "sentence", en: "We [[reject]] this collapse and argue Gap D's [[institutionally]] independence along **three theoretical dimensions**.", zh: "我們駁回這種「合併論」,並沿三個理論維度論證 Gap D 的制度性獨立。" },
+
+      { type: "h4", en: "3.2.1 Dimension 1 — Accountability (Drucker, 1993)", zh: "維度一:問責性" },
+      { type: "sentence", en: "Drucker's (1993) institutional [[accountability]] [[framework]] establishes that [[managerial]] responsibility [[tracks]] [[identifiable]] [[agency]].", zh: "Drucker(1993)的制度性問責架構指出:管理責任追隨「可識別的行動主體」。" },
+      { type: "sentence", en: "**PZB Gap 4 information actors are providers themselves**—legally accountable for unfair claims under consumer protection law, advertising regulation, and contract law.", zh: "「PZB Gap 4 的資訊行為者就是業者本身」——他們在消費者保護法、廣告法、契約法之下,對不實宣稱負有法律責任。" },
+      { type: "sentence", en: "Provider [[deception]] is rare not because providers are virtuous but because the accountability [[infrastructure]] makes [[deception]] [[structurally]] costly.", zh: "業者的欺騙之所以罕見,並不是因為業者有德行,而是因為「問責基礎建構」使欺騙在結構上「成本高昂」。" },
+      { type: "sentence", en: "**Gap D information actors are anonymous third parties**—paid review farms, competitor [[saboteurs]], AI-generated content operations.", zh: "「Gap D 的資訊行為者則是匿名的第三方」——付費評論農場、競爭對手的破壞者、AI 生成內容操作。" },
+      { type: "sentence", en: "They face fundamentally different accountability conditions: anonymity, [[jurisdictional]] [[dispersion]], and structural difficulty in legal [[redress]].", zh: "他們面對的問責條件根本不同:匿名性、司法管轄分散性、以及法律救濟的結構性困難。" },
+      { type: "sentence", en: "The institutional accountability layer that [[disciplines]] Gap 4 actors is *[[structurally]] [[absent]]* for Gap D actors.", zh: "那個約束 Gap 4 行為者的制度問責層,對 Gap D 行為者而言是「結構性地缺位的」。" },
+      { type: "callout", title: "維度一結論 Dimension 1 Conclusion", body: "Gap 4 與 Gap D 在「行為者可識別性」與「問責基礎建構」上有差異。它們在制度上是不同的。" },
+
+      { type: "h4", en: "3.2.2 Dimension 2 — Signal Credibility (Spence, 1973)", zh: "維度二:信號可信度" },
+      { type: "sentence", en: "Spence's (1973) [[signaling]] theory holds that signal credibility depends on (a) source [[identifiability]] and (b) cost structure.", zh: "Spence(1973)的信號理論主張:信號可信度取決於 (a) 來源可識別性,以及 (b) 成本結構。" },
+      { type: "sentence", en: "**Provider advertising signals**: source identified, costs include legal exposure for false claims; consumers activate **persuasion knowledge** (Friestad & Wright, 1994) and automatically discount.", zh: "「業者廣告訊號」:來源已被識別、成本包含對不實宣稱的法律風險;消費者會啟動「說服知識」(Friestad & Wright, 1994)並自動打折扣。" },
+      { type: "sentence", en: "**Fake review signals**: source [[obscured]] (presented as peer consumer), costs near-zero, consumer persuasion knowledge **does not activate** because the signal [[frame]] is \"peer experience-sharing\" not \"promotion.\"", zh: "「假評訊號」:來源被遮蔽(以「同儕消費者」的形式出現)、成本趨近於零、且消費者的「說服知識並不會被啟動」,因為訊號的框架是「同儕經驗分享」而非「促銷宣傳」。" },
+      { type: "sentence", en: "Consumers treat peer signals with substantially higher [[weight]] than provider signals (Bickart & Schindler, 2001), making fake reviews effective precisely because they exploit a credibility frame that bypasses persuasion-knowledge defenses.", zh: "消費者賦予「同儕訊號」的權重遠高於「業者訊號」(Bickart & Schindler, 2001),這正是假評之所以有效的關鍵——它們利用了一個可繞過「說服知識防禦」的可信度框架。" },
+      { type: "callout", title: "維度二結論 Dimension 2 Conclusion", body: "Gap 4 與 Gap D 啟動的是「不同的消費者資訊處理路徑」。它們具有「不同的信號可信度體系」。" },
+
+      { type: "h4", en: "3.2.3 Dimension 3 — Market Failure Mechanism (Akerlof, 1970)", zh: "維度三:市場失靈機制" },
+      { type: "sentence", en: "Akerlof's (1970) market for [[lemons]] describes how [[unaddressed]] information [[asymmetry]] can produce a **[[pooling]] [[equilibrium]]** in which honest sellers are systematically driven out.", zh: "Akerlof(1970)的「檸檬市場」描述了一件事:未被處理的資訊不對稱會產生「混合均衡」,在此均衡下誠實賣家會被系統性地逐出市場。" },
+      { type: "sentence", en: "**PZB Gap 4 markets** [[historically]] [[equilibrate]] around **promotional [[puffery]] [[norms]]**—consumers expect some marketing exaggeration and discount accordingly; the [[equilibrium]] is suboptimal but stable.", zh: "「PZB Gap 4 的市場」在歷史上是圍繞「廣告誇大規範」達到均衡——消費者預期會有一定程度的行銷誇張並據此打折扣;此均衡雖然次佳但相對穩定。" },
+      { type: "sentence", en: "**Gap D markets** introduce a [[qualitatively]] different equilibrium: the **lemon-signaling pooling [[equilibrium]]**, in which honest providers cannot [[credibly]] distinguish themselves from fake-review-juiced competitors, and the cost-[[rational]] response for honest providers is to also engage in fake review production—a [[textbook]] lemons market collapse.", zh: "「Gap D 的市場」則引入一個本質上不同的均衡:「檸檬式信號的混合均衡」——誠實業者無法可信地把自己與「靠假評催化的競爭者」區分開來,而誠實業者在成本-理性下的反應就是「自己也去製造假評」——這是一個典型的檸檬市場崩潰。" },
+      { type: "sentence", en: "Empirical evidence consistent with this mechanism: review [[manipulation]] [[prevalence]] in Taiwan e-commerce has grown from estimated 12% (2018) to 29% (2024) (TFTC, 2025), with strong signal of supply-side [[normalization]].", zh: "與此機制一致的實證證據:台灣電子商務中評論操弄的盛行率,從 2018 年估計的 12% 上升至 2024 年的 29%(TFTC, 2025),呈現強烈的「供給端常態化」訊號。" },
+      { type: "callout", title: "維度三結論 Dimension 3 Conclusion", body: "Gap D 產生了與 Gap 4 結構性不同的市場失靈——並非同一失靈型態的延續,而是一個全新的均衡類別,需要不同的介入設計。" },
+
+      { type: "h3", en: "3.3 EAQUAL Construct Definition", zh: "3.3 EAQUAL 構念定義" },
+      { type: "sentence", en: "To [[operationalize]] Gap D for empirical measurement, we develop the **Expectation Authenticity Quality (EAQUAL)** [[construct]], [[decomposed]] into three sub-dimensions.", zh: "為將 Gap D 操作化以進行實證測量,我們發展「期望真實性品質(EAQUAL)」構念,分解為三個次構面。" },
+
+      { type: "h4", en: "3.3.1 Source Credibility (SC, 4 items)", zh: "來源可信度(SC,4 題)" },
+      { type: "sentence", en: "The perceived authenticity of the review-author's identity and behavioral pattern.", zh: "消費者所感知到的「評論作者身分與行為模式」之真實性。" },
+      { type: "sentence", en: "SC captures whether the consumer perceives the review-author as a real, accountable, traceable person rather than a fabricated or aggregated identity.", zh: "SC 捕捉的是:消費者是否把評論作者視為一個「真實、可問責、可追溯的人」,而非一個被捏造或被聚合而成的身分。" },
+      { type: "sentence", en: "Operational [[anchors]] include account history, posting patterns, profile [[self-disclosure]], and cross-platform consistency.", zh: "操作性錨點包含:帳號歷史、發文模式、個人檔案的自我揭露、跨平台的一致性。" },
+
+      { type: "h4", en: "3.3.2 Content Authenticity (CA, 6 items)", zh: "內容真實性(CA,6 題)" },
+      { type: "sentence", en: "The perceived [[presence]] of MOT-[[anchored]] specific details indicating actual experience—temporal markers, spatial descriptions, [[personnel]] interactions, [[sensory]] [[particulars]], [[contingent]] events, social cues, and communicative interactions.", zh: "消費者所感知到、指向真實親歷的「MOT 錨點具體細節」之呈現——時間標記、空間描述、人員互動、感官細節、偶發事件、社交線索、溝通互動。" },
+      { type: "sentence", en: "CA operationalizes the Carlzon (1987) MOT contact taxonomy at the consumer perception level.", zh: "CA 把 Carlzon(1987)的 MOT 接觸分類學在「消費者感知層級」予以操作化。" },
+
+      { type: "h4", en: "3.3.3 Experience Consistency (EC, 5 items)", zh: "體驗一致性(EC,5 題)" },
+      { type: "sentence", en: "The perceived [[alignment]] between review descriptions and the consumer's own (or [[anticipated]]) experience.", zh: "消費者所感知到的「評論描述」與「自身(或預期)經驗」之間的一致程度。" },
+      { type: "sentence", en: "EC captures cross-review [[consensus]] on details, temporal congruence, group-level consistency, expectation-gap descriptions, and reverse-experience indicators.", zh: "EC 捕捉的是:跨評論在細節上的共識、時間契合度、群體層面的一致性、期望落差的描述、以及反向經驗的指標。" },
+      { type: "sentence", en: "The three-construct decomposition reflects three theoretically distinct authenticity signals: **who** (SC), **what** (CA), and **how-it-fits** (EC).", zh: "此三構念分解反映了三種理論上不同的真實性訊號:「誰」(SC)、「什麼」(CA)、「如何契合」(EC)。" },
+      { type: "sentence", en: "These map onto the three theoretical dimensions in §3.2: SC anchors accountability (Drucker), CA anchors signal-cost asymmetry (Spence), and EC anchors equilibrium-detection (Akerlof).", zh: "三者恰可對應 §3.2 的三個理論維度:SC 錨定問責性(Drucker)、CA 錨定信號成本不對稱(Spence)、EC 錨定均衡偵測(Akerlof)。" },
+
+      { type: "h3", en: "3.4 The Dual-Track Mechanism: EAQUAL ↔ MACS ↔ EHM", zh: "3.4 雙軌機制:EAQUAL ↔ MACS ↔ EHM" },
+      { type: "sentence", en: "EAQUAL alone provides a measurement layer; it does not by itself reduce Gap D.", zh: "EAQUAL 本身僅提供測量層;它本身並不能減少 Gap D。" },
+      { type: "sentence", en: "A complete intervention requires platform-side coupling.", zh: "完整的介入需要平台端的耦合。" },
+      { type: "sentence", en: "We propose the **MOT Authenticity Certification System (MACS)** as the platform-side complement.", zh: "我們提出「MOT 真實性認證系統(MACS)」作為平台端的互補機制。" },
+      { type: "sentence", en: "MACS operates on a **click-selection paradigm**: rather than (or in addition to) accepting open-text reviews, platforms present consumers with categorized MOT-detail options derived from a pre-validated [[semantic]] database.", zh: "MACS 採用「點選式典範」運作:相對於(或除了)接受開放式文字評論之外,平台向消費者呈現一組分類好的 MOT 細節選項,這些選項源自一個預先驗證的語意資料庫。" },
+      { type: "sentence", en: "Reviewers select applicable detail items; the platform aggregates these into a **MACS authenticity score** for each review using a weighted aggregation formula (see §4.4).", zh: "評論者勾選適用的細節項目;平台則使用加權聚合公式,把這些勾選結果聚合為每則評論的「MACS 真實性分數」(詳見 §4.4)。" },
+      { type: "sentence", en: "The dual-track architecture realizes the **Expectation Honesty Management (EHM)** principle.", zh: "此雙軌架構落實了「期望誠實管理(EHM)」原則。" },
+      { type: "table", headers:["Track 軌道", "Mechanism 機制", "Theoretical Anchor 理論錨點"], rows:[
+        ["EAQUAL(消費者端)", "訓練並裝備消費者識別真實性訊號", "Akerlof 的買方端識別能力"],
+        ["MACS(平台端)", "重塑誘因結構:讓「MOT 具體細節」成為高真實性分數的必要條件", "Akerlof 的賣方端誘因重塑"],
+        ["EHM(整合原則)", "兩條軌道相互強化:高 MACS 評論訓練消費者的 EAQUAL 判斷,而具備 EAQUAL 意識的消費者則創造對 MACS 認證評論的需求", "Akerlof 的雙端均衡修正"]
+      ] },
+
+      { type: "h3", en: "3.5 Hypotheses", zh: "3.5 假設" },
+      { type: "sentence", en: "We pre-register six hypotheses across two clusters.", zh: "我們在兩個群組中預先註冊六個假設。" },
+
+      { type: "h4", en: "3.5.1 H1 Cluster — EAQUAL Psychometric Properties", zh: "H1 群組:EAQUAL 心理計量性質" },
+      { type: "sentence", en: "**H1a ([[Convergent]] validity)**: The three EAQUAL [[sub-dimensions]] (SC, CA, EC) will [[exhibit]] significant positive intercorrelations, with α ≥ 0.70, supporting common-construct measurement of expectation authenticity.", zh: "**H1a(收斂效度)**:EAQUAL 的三個次構面(SC、CA、EC)會呈現顯著的正向相互相關,α ≥ 0.70,支持「期望真實性」為共同構念的測量。" },
+      { type: "sentence", en: "**H1b ([[Discriminant]] validity)**: EAQUAL total score will correlate positively but with shared variance < 40% with SERVQUAL Gap 5 score, confirming the constructs measure related but distinct phenomena.", zh: "**H1b(區辨效度)**:EAQUAL 總分與 SERVQUAL Gap 5 分數呈正相關,但共享變異量 < 40%,確認兩者測量的是「相關但有別」的現象。" },
+      { type: "sentence", en: "Specifically, we predict EC will exhibit highest [[discriminant]] correlation with SERVQUAL (as both touch experience-perception alignment), while SC and CA exhibit lower SERVQUAL correlations (theoretically prior to encounter).", zh: "具體而言,我們預測 EC 與 SERVQUAL 的區辨相關度最高(因兩者都觸及體驗-感知的一致性),而 SC 與 CA 與 SERVQUAL 的相關度則較低(因兩者在理論上位於接觸之前)。" },
+      { type: "sentence", en: "**H1c ([[Predictive]] validity)**: EAQUAL total score will significantly predict consumer trust in target reviews (β > 0.40, p < .01) and purchase intention (β > 0.25, p < .01) above and beyond review valence and length controls.", zh: "**H1c(預測效度)**:在控制了「評論情緒方向」與「評論長度」之後,EAQUAL 總分仍能顯著預測消費者對目標評論的信任(β > 0.40, p < .01)與購買意圖(β > 0.25, p < .01)。" },
+
+      { type: "h4", en: "3.5.2 H2 Cluster — MACS Effectiveness", zh: "H2 群組:MACS 效能" },
+      { type: "sentence", en: "**H2a (Authenticity discrimination)**: Reviews flagged Red-tier by MACS will show significantly higher proportion of laboratory-confirmed fake reviews than Green-tier reviews (predicted: 3.5x ratio or higher), establishing MACS classification efficacy.", zh: "**H2a(真實性區辨)**:被 MACS 標為紅階的評論,相較於綠階評論,將呈現顯著更高比例之「實驗室確認假評」(預測:倍率 ≥ 3.5),藉此確立 MACS 分類的效能。" },
+      { type: "sentence", en: "**H2b (Consumer trust calibration)**: Consumers exposed to MACS-displayed reviews will exhibit more accurately calibrated trust judgments (operationalized as reduced absolute deviation between perceived and actual review authenticity), with predicted effect d = 0.45–0.65.", zh: "**H2b(消費者信任校準)**:接觸 MACS 顯示之評論的消費者,將在信任判斷上展現更準確的校準(操作化為:感知與實際真實性之間絕對偏離量的下降),預測效應量 d = 0.45–0.65。" },
+      { type: "sentence", en: "**H2c (ELM moderation boundary)**: MACS effectiveness will be moderated by product [[involvement]] (Petty & Cacioppo, 1986).", zh: "**H2c(ELM 調節邊界)**:MACS 的效能將被「產品涉入度」所調節(Petty & Cacioppo, 1986)。" },
+      { type: "sentence", en: "High-involvement consumers (motivation present + ability available) will show stronger MACS-effect than low-involvement consumers (predicted moderation effect ΔR² ≈ 0.06–0.10).", zh: "高涉入度消費者(動機具備 + 能力可及)將呈現比低涉入度消費者更強的 MACS 效應(預測調節效果 ΔR² ≈ 0.06–0.10)。" },
+      { type: "sentence", en: "H2c's ELM moderation [[explicitly]] [[delineates]] the [[boundary]] condition of our framework: **MACS does not operate as a universal solution but as a leverage point within the ELM dual-condition envelope**.", zh: "H2c 的 ELM 調節明確界定了本架構的邊界條件:「MACS 並不作為一個普遍適用的解方,而是作為一個位於 ELM 雙條件包絡之內的槓桿點」。" }
+    ]
+  },
+
+  intro: {
+    label: "Section II",
+    title: "Introduction",
+    roman: "緒論",
+    content: [
+      { type: "h3", en: "1.1 The ZMOT Collapse Phenomenon", zh: "1.1 ZMOT 崩潰現象" },
+      { type: "sentence", en: "In [[contemporary]] digital service [[ecosystems]], online reviews [[function as]] the [[primary]] [[informational]] [[input]] for [[consumer]] [[pre-purchase]] decisions.", zh: "在當代數位服務生態系中,線上評論作為消費者購買前決策的主要資訊輸入。" },
+      { type: "sentence", en: "Lecinski's (2011) **Zero Moment of Truth (ZMOT)** concept [[formalizes]] this: consumers [[necessarily]] [[traverse]] an online information-[[gathering]] [[phase]] before entering the physical or digital service [[encounter]].", zh: "Lecinski(2011)的「零關鍵時刻(ZMOT)」概念把這件事形式化:消費者必然會先經歷一段線上資訊蒐集階段,然後才進入實體或數位的服務接觸。" },
+      { type: "sentence", en: "[[Empirical]] [[evidence]] is [[striking]]—93% of consumers [[consult]] online reviews before purchase (PowerReviews, 2023), and 71% [[rely on]] Google Reviews specifically (Capital One Shopping, 2025).", zh: "實證證據相當驚人——93% 的消費者在購買前會查閱線上評論(PowerReviews, 2023),其中 71% 特別依賴 Google 評論(Capital One Shopping, 2025)。" },
+      { type: "sentence", en: "This [[mechanism]] was [[originally]] designed to **reduce** the [[structural]] information [[asymmetry]] [[inherent]] in service industries.", zh: "此機制原本是為了「降低」服務業固有的結構性資訊不對稱而設計。" },
+      { type: "sentence", en: "However, the [[proliferation]] of fake online reviews has [[precipitated]] what we [[term]] the **ZMOT [[collapse]]**: consumers believe they are receiving [[authentic]] [[peer]] experiences, but are in fact [[systematically]] encountering [[manufactured]] [[narratives]] [[crafted]] to [[bias]] expectation [[formation]].", zh: "然而,假評的氾濫已經促成我們所稱的「ZMOT 崩潰」:消費者以為自己接收到的是真實的同儕經驗,實際上卻系統性地碰上了經過精心捏造、用來扭曲期望形成的虛構敘事。" },
+      { type: "sentence", en: "The Federal Trade Commission's 2024 [[prohibition]] on fake reviews and the EU Digital Services Act's emerging review-authenticity [[provisions]] reflect [[growing]] institutional recognition that this is no longer a [[marginal]] [[phenomenon]] but a [[systemic]] market failure.", zh: "美國聯邦貿易委員會 2024 年對假評的禁令、以及歐盟《數位服務法》中正在浮現的評論真實性條款,均反映出制度層面日益的認知:這已經不是邊緣性現象,而是一種系統性的市場失靈。" },
+
+      { type: "h3", en: "1.2 The Theoretical Lacuna", zh: "1.2 理論缺口" },
+      { type: "sentence", en: "Existing fake review detection (FRD) research has [[predominantly]] operated at the technical layer—machine learning [[classifiers]], deep learning networks, graph [[neural]] networks (Mohawesh et al., 2021; Salminen et al., 2025).", zh: "既有的假評偵測(FRD)研究絕大部分都運作於技術層——機器學習分類器、深度學習網路、圖神經網路(Mohawesh et al., 2021; Salminen et al., 2025)。" },
+      { type: "sentence", en: "Despite [[achieving]] high [[in-sample]] [[accuracy]], these efforts share a common [[conceptual]] [[blind spot]]:", zh: "儘管這些研究在樣本內取得了很高的準確率,卻共同擁有一個概念上的盲點:" },
+      { type: "callout", title: "核心論點 The Core Argument", body: "**即使假評在事後被偵測並移除,已經接觸到這些假評的消費者也已經形成了被扭曲的期望;這些被扭曲的期望會向前傳遞,進入實際的服務接觸,從而產生一個無法被「事後刪除」逆轉的服務品質缺口。**" },
+      { type: "sentence", en: "This is not a technical problem with a technical solution; it is a **theoretical gap in service quality measurement**.", zh: "這不是一個能用技術方法解決的技術問題,而是「服務品質測量」的一個理論缺口。" },
+      { type: "sentence", en: "The PZB (Parasuraman et al., 1985) service quality model defines quality as SQ = P − E, with E ([[expectations]]) [[shaped]] by four traditional sources: word-of-mouth, personal needs, past experience, and external communications.", zh: "PZB(Parasuraman et al., 1985)服務品質模型把「品質」定義為 SQ = P − E,而 E(期望)由四個傳統來源塑造:口碑、個人需求、過去經驗、外部溝通。" },
+      { type: "sentence", en: "PZB's Gap 4 captures the [[discrepancy]] between what providers promise externally and what they deliver.", zh: "PZB 的 Gap 4 捕捉的是「服務提供者對外承諾」與「實際所交付」之間的落差。" },
+      { type: "sentence", en: "**But fake reviews are not provider-originated external communications**—they [[originate]] from [[third parties]] [[impersonating]] [[peer]] consumers, [[exploiting]] the [[credibility]] [[heuristic]] that [[peer]] signals [[carry over]] provider signals (Friestad & Wright, 1994).", zh: "「但是假評並不是源於服務提供者的外部溝通」——它們是源自第三方,假冒成同儕消費者,利用了「同儕訊號比業者訊號更可信」這個認知捷思(Friestad & Wright, 1994)。" },
+      { type: "callout", title: "三項研究問題 Research Questions", body: "**RQ1(理論獨立性)**:Gap D 是否構成一個制度上獨立的服務品質缺口?還是僅僅是 PZB Gap 4 的數位延伸?<br><br>**RQ2(測量)**:從消費者視角來看,「期望形塑資訊的真實性」可以如何測量?<br><br>**RQ3(介入)**:什麼樣結合「消費者端覺察」與「平台端揭露」的雙端機制,可以將 Akerlof(1970)對於數位服務市場失靈的修正召喚予以操作化?" },
+
+      { type: "h3", en: "1.3 Contributions", zh: "1.3 研究貢獻" },
+      { type: "sentence", en: "This study makes three [[principal]] [[contributions]]:", zh: "本研究提出三項主要貢獻:" },
+      { type: "sentence", en: "**Theoretical**: We [[formally]] define Gap D and [[demonstrate]] its [[institutionally]] independence from PZB Gap 4 through a three-dimensional argument [[grounded]] in Drucker (1993), Spence (1973), and Akerlof (1970).", zh: "**理論貢獻**:我們正式定義 Gap D,並透過立基於 Drucker(1993)、Spence(1973)、Akerlof(1970)的三維論證,證明其與 PZB Gap 4 在制度上的獨立性。" },
+      { type: "sentence", en: "We show that Gap D operates on different [[actors]] (third parties vs. providers), different signal credibility [[regimes]] ([[peer]] vs. provider), and different market failure mechanisms ([[lemon-signaling]] vs. promotional [[puffery]]).", zh: "我們證明 Gap D 運作於不同的當事方(第三方 vs. 服務提供者)、不同的信號可信度體系(同儕 vs. 業者)、以及不同的市場失靈機制(檸檬市場式信號 vs. 廣告誇大其詞)。" },
+      { type: "sentence", en: "**Methodological**: We develop EAQUAL-15, the first consumer-side three-dimensional measurement instrument [[explicitly]] [[designed]] for expectation authenticity ([[rather than]] perceived service quality), [[operationalizing]] Gap D for empirical research.", zh: "**方法學貢獻**:我們發展 EAQUAL-15——第一個明確以「期望真實性」(而非「感知服務品質」)為測量標的之消費者端三維量表,把 Gap D 操作化以供實證研究使用。" },
+      { type: "sentence", en: "We complement EAQUAL with MACS, a platform-side click-based assessment tool whose semantic database is constructed via a [[transparent]], pre-registered three-LLM [[ensemble]] [[protocol]].", zh: "我們以 MACS 補充 EAQUAL——一個平台端、點選式的評分工具,其語意資料庫透過一個透明、預先註冊的三 LLM 集成協議建構。" },
+      { type: "sentence", en: "**Policy**: We respond to Akerlof's (1970) original theoretical call for **dual-end intervention** in markets with information asymmetry—strengthening buyer-side discernment (via EAQUAL) while reshaping seller-side disclosure incentives (via MACS).", zh: "**政策貢獻**:我們回應 Akerlof(1970)對於資訊不對稱市場「雙端介入」的原始理論呼籲——透過 EAQUAL 強化買方端的識別能力,同時透過 MACS 重塑賣方端的揭露誘因。" },
+      { type: "sentence", en: "We [[explicitly]] [[delineate]] the ELM dual-condition boundary (motivation × ability) within which our [[framework]] operates, identifying product [[involvement]] as a critical [[moderator]] for future work.", zh: "我們明確界定本架構運作所在的 ELM 雙條件邊界(動機 × 能力),並指認「產品涉入度」為未來研究的關鍵調節變項。" },
+
+      { type: "h3", en: "1.4 Pre-Registration Statement", zh: "1.4 預先註冊聲明" },
+      { type: "sentence", en: "Per the standards [[articulated]] by Nosek et al. (2018) for pre-registered reports, this manuscript [[fixes]] all theoretical claims, measurement [[instrument]]s, hypotheses, [[sampling]] plans, and [[analytic]] [[procedures]] **[[prior to]] data collection**.", zh: "依據 Nosek et al.(2018)為「預先註冊報告」所闡述的標準,本稿件在「資料蒐集之前」即固定下所有理論主張、測量工具、假設、抽樣計畫,以及分析程序。" },
+      { type: "sentence", en: "[[Predicted]] effect size ranges are [[derived]] from prior service quality and signaling literature, not from preliminary data inspection.", zh: "預測的效應量區間是從先行的服務品質與信號理論文獻推導而來,並非從初步資料檢視所得。" },
+      { type: "sentence", en: "Any [[deviation]] between this pre-registered protocol and the eventual [[implementation]] will be [[transparently]] [[disclosed]] in [[supplementary]] materials.", zh: "本預先註冊協議與最終執行版本之間任何的偏離,都將在補充資料中透明地揭露。" }
+    ]
+  }
+};
+
+// Active section
+let activeSectionId = 'abstract';
+let speechRate = 0.9;
+
+// ============================================
+// RENDERING
+// ============================================
+function renderTabs() {
+  const order = ['abstract','abstract_zh','intro','lit','framework','methods','results','discussion','limitations','conclusion','references'];
+  const labels = {
+    abstract:'Abstract', abstract_zh:'中文摘要', intro:'1. Introduction', lit:'2. Literature',
+    framework:'3. Framework', methods:'4. Methods', results:'5. Results', discussion:'6. Discussion',
+    limitations:'7. Limitations', conclusion:'8. Conclusion', references:'References'
+  };
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = order.map((id, i) => {
+    const exists = SECTIONS[id];
+    const numeral = ['i.','i-b','1.','2.','3.','4.','5.','6.','7.','8.','§'][i];
+    return `<button class="tab ${id===activeSectionId?'active':''} ${!exists?'pending':''}"
+              data-section="${id}">
+              <span class="num">${numeral}</span>${labels[id]||id}
+              ${!exists?'<small style="opacity:0.6;font-size:9px;display:block;margin-top:2px;">建構中</small>':''}
+            </button>`;
+  }).join('');
+}
+
+function renderContent(sectionId) {
+  const sec = SECTIONS[sectionId];
+  const main = document.getElementById('reading');
+  if (!sec) {
+    main.innerHTML = `<div class="loading-section">📝 此章節內容建構中,將在下一輪更新中加入。</div>`;
+    updateProgress(0,0);
+    return;
+  }
+  let html = `<div class="section-label">${sec.label}</div>
+              <h2 class="section-title">${sec.title} ${sec.roman?`<span class="roman">— ${sec.roman}</span>`:''}</h2>`;
+  let sentenceIdx = 0;
+  sec.content.forEach(item => {
+    if (item.type === 'sentence') {
+      const enHtml = renderInline(item.en);
+      html += `
+        <div class="sentence" data-idx="${sentenceIdx}">
+          <span class="sentence-num">${String(sentenceIdx+1).padStart(2,'0')}</span>
+          <div class="en">${enHtml}</div>
+          <div class="zh">${item.zh}</div>
+          <div class="sentence-controls">
+            <button class="icon-btn play-sentence" title="朗讀整句" data-idx="${sentenceIdx}">▶</button>
+            <button class="icon-btn toggle-zh" title="顯示/隱藏中譯" data-idx="${sentenceIdx}">譯</button>
+            <button class="icon-btn mark-read" title="標記已讀" data-idx="${sentenceIdx}">✓</button>
+            <span class="ctrl-text">${sec.title} · ${sentenceIdx+1}</span>
+          </div>
+        </div>`;
+      sentenceIdx++;
+    } else if (item.type === 'h3') {
+      html += `<h3 class="subsection">${item.en}</h3>
+               ${item.zh?`<div class="subsection-zh">${item.zh}</div>`:''}`;
+    } else if (item.type === 'h4') {
+      html += `<h4 class="subsubsection">${item.en} <span style="color:var(--ink-soft);font-style:normal;font-size:13px;">— ${item.zh||''}</span></h4>`;
+    } else if (item.type === 'callout') {
+      html += `<div class="callout">
+                 <div class="callout-title">${item.title}</div>
+                 <div class="callout-content">${item.body}</div>
+               </div>`;
+    } else if (item.type === 'formula') {
+      html += `<div class="formula">${item.formula}</div>
+               <div class="formula-caption">${item.caption||''}</div>`;
+    } else if (item.type === 'zh-block') {
+      html += `<div class="zh-abstract">${item.html}</div>`;
+    } else if (item.type === 'keywords') {
+      html += `<div class="keywords">
+                 <span class="keywords-label">${item.label}:</span> ${item.items.join(' · ')}
+               </div>`;
+    } else if (item.type === 'table') {
+      html += renderTable(item);
+    } else if (item.type === 'ref-list') {
+      html += `<ol class="ref-list">${item.items.map(i=>`<li>${i}</li>`).join('')}</ol>`;
+    }
+  });
+  main.innerHTML = html;
+  updateProgress(0, sentenceIdx);
+}
+
+function renderInline(text) {
+  // **bold**
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // [[vocab]]
+  text = text.replace(/\[\[(.+?)\]\]/g, (m, w) => {
+    const key = w.toLowerCase();
+    return VOCAB[key]
+      ? `<span class="vocab" data-word="${key}">${w}</span>`
+      : w;
+  });
+  return text;
+}
+
+function renderTable(item) {
+  let html = '<table class="data-table"><thead><tr>';
+  item.headers.forEach(h => html += `<th>${h}</th>`);
+  html += '</tr></thead><tbody>';
+  item.rows.forEach(r => {
+    html += '<tr>';
+    r.forEach(c => html += `<td>${c}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+// ============================================
+// TTS
+// ============================================
+function speak(text, lang='en-US', rate=null) {
+  if (!('speechSynthesis' in window)) { alert('您的瀏覽器不支援語音朗讀功能'); return null; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang;
+  u.rate = rate || speechRate;
+  u.pitch = 1;
+  const voices = speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.lang.startsWith(lang.split('-')[0]) && v.localService);
+  if (preferred) u.voice = preferred;
+  speechSynthesis.speak(u);
+  return u;
+}
+
+// ============================================
+// EVENTS
+// ============================================
+document.addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (tab) {
+    activeSectionId = tab.dataset.section;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderContent(activeSectionId);
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  const sentBtn = e.target.closest('.play-sentence');
+  if (sentBtn) {
+    e.stopPropagation();
+    const idx = +sentBtn.dataset.idx;
+    const sec = SECTIONS[activeSectionId];
+    let count = 0;
+    const sent = sec.content.find(c => c.type==='sentence' && count++ === idx);
+    if (sent) {
+      const text = sent.en.replace(/\[\[(.+?)\]\]/g,'$1').replace(/\*\*(.+?)\*\*/g,'$1');
+      document.querySelectorAll('.icon-btn.playing').forEach(b => b.classList.remove('playing'));
+      sentBtn.classList.add('playing');
+      const u = speak(text, 'en-US');
+      if (u) u.onend = () => sentBtn.classList.remove('playing');
+    }
+    return;
+  }
+  const zhBtn = e.target.closest('.toggle-zh');
+  if (zhBtn) {
+    e.stopPropagation();
+    const idx = +zhBtn.dataset.idx;
+    document.querySelector(`.sentence[data-idx="${idx}"] .zh`).classList.toggle('show');
+    return;
+  }
+  const readBtn = e.target.closest('.mark-read');
+  if (readBtn) {
+    e.stopPropagation();
+    const idx = +readBtn.dataset.idx;
+    document.querySelector(`.sentence[data-idx="${idx}"]`).classList.toggle('read');
+    updateProgress();
+    return;
+  }
+  // Vocab tap
+  const voc = e.target.closest('.vocab');
+  if (voc) {
+    e.stopPropagation();
+    showTooltip(voc);
+    return;
+  }
+  // Tooltip play btn
+  const ttPlay = e.target.closest('[data-tt-play]');
+  if (ttPlay) {
+    e.stopPropagation();
+    speak(ttPlay.dataset.ttPlay, 'en-US', 0.85);
+    return;
+  }
+  // Click outside vocab/tooltip to close
+  if (!e.target.closest('.vocab-tooltip')) {
+    document.getElementById('tooltip').classList.remove('show');
+  }
+  // Click sentence body → toggle zh
+  const sent = e.target.closest('.sentence');
+  if (sent && !e.target.closest('.icon-btn') && !e.target.closest('.zh')) {
+    sent.querySelector('.zh').classList.toggle('show');
+  }
+});
+
+// Global zh toggle
+document.getElementById('show-zh').addEventListener('change', (e) => {
+  const show = e.target.checked;
+  document.querySelectorAll('.zh').forEach(z => {
+    if (show) z.classList.add('show'); else z.classList.remove('show');
+  });
+});
+
+// Font size
+document.querySelectorAll('[data-fs]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-fs]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.body.classList.remove('fs-small','fs-large');
+    if (btn.dataset.fs === 'small') document.body.classList.add('fs-small');
+    if (btn.dataset.fs === 'large') document.body.classList.add('fs-large');
+  });
+});
+
+// Speech rate
+document.querySelectorAll('[data-rate]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-rate]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speechRate = +btn.dataset.rate;
+  });
+});
+
+// ============================================
+// TOOLTIP
+// ============================================
+const tooltip = document.getElementById('tooltip');
+let tooltipTimer;
+function showTooltip(target) {
+  const word = target.dataset.word;
+  const v = VOCAB[word];
+  if (!v) return;
+  tooltip.innerHTML = `
+    <div class="vt-word">
+      <span>${target.textContent}</span>
+      <button class="vt-play" data-tt-play="${word}" title="朗讀單字">🔊</button>
+    </div>
+    <div class="vt-pos">
+      <span class="pos-tag">${v.pos}</span>
+      <span>${v.phon}</span>
+    </div>
+    <div class="vt-zh">${v.zh}</div>
+    <div class="vt-example">"${v.ex_en}"</div>
+    <div class="vt-example-zh">${v.ex_zh}</div>`;
+  const rect = target.getBoundingClientRect();
+  const ttWidth = 300;
+  let left = rect.left;
+  if (left + ttWidth > window.innerWidth - 16) left = window.innerWidth - ttWidth - 16;
+  if (left < 16) left = 16;
+  let top = rect.bottom + 10;
+  if (top + 220 > window.innerHeight) top = rect.top - 230;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+  tooltip.classList.add('show');
+}
+function hideTooltip() {
+  tooltipTimer = setTimeout(()=>tooltip.classList.remove('show'), 250);
+}
+document.addEventListener('mouseover', e => {
+  const v = e.target.closest('.vocab');
+  if (!v) return;
+  clearTimeout(tooltipTimer);
+  showTooltip(v);
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('.vocab')) hideTooltip();
+});
+tooltip.addEventListener('mouseenter', () => clearTimeout(tooltipTimer));
+tooltip.addEventListener('mouseleave', () => hideTooltip());
+
+// ============================================
+// PROGRESS
+// ============================================
+function updateProgress(_, total) {
+  if (total !== undefined) {
+    document.getElementById('progress-text').dataset.total = total;
+  }
+  const t = +document.getElementById('progress-text').dataset.total || 0;
+  const r = document.querySelectorAll('.sentence.read').length;
+  document.getElementById('progress-fill').style.width = (t? (r/t)*100 : 0) + '%';
+  document.getElementById('progress-text').textContent = `${r} / ${t}`;
+}
+
+// ============================================
+// INIT
+// ============================================
+renderTabs();
+renderContent(activeSectionId);
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>
